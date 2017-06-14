@@ -1,0 +1,12 @@
+1.0
+- Date : 12/05/2017
+- Refonte du package
+
+0.2.0
+- Date : 19/01/2017
+- Modification architecture du package
+- Fusion de genepop et de genepop-shiny
+
+0.1.0
+- Date : 9/11/2016
+- Creation of the package R : genepop
