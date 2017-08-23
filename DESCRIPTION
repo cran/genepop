@@ -1,7 +1,7 @@
 Package: genepop
 Type: Package
 Title: Population Genetic Data Analysis Using Genepop
-Version: 1.0
+Version: 1.0.5
 Authors@R: c(person("François", "Rousset", role = c("aut", "cre", "cph"),
                      email = "francois.rousset@umontpellier.fr"),
                      person("Jimmy","Lopez", role="ctb"),
@@ -18,9 +18,9 @@ RoxygenNote: 6.0.1
 URL: https://www.r-project.org,
         http://kimura.univ-montp2.fr/~rousset/Genepop.htm
 NeedsCompilation: yes
-Packaged: 2017-06-13 22:11:38 UTC; Francois.rousset
+Packaged: 2017-08-23 16:40:52 UTC; Francois.rousset
 Author: François Rousset [aut, cre, cph],
   Jimmy Lopez [ctb],
   Khalid Belkhir [ctb]
 Repository: CRAN
-Date/Publication: 2017-06-14 21:49:05 UTC
+Date/Publication: 2017-08-23 16:54:12 UTC

@@ -5,12 +5,11 @@
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Genepop version 4.6.9</title>
-  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-  <meta name="description" content="Genepop version 4.6.9">
-  <meta name="generator" content="bookdown 0.3 and GitBook 2.6.7">
+  <title>Genepop version 4.7.0</title>
+  <meta name="description" content="Genepop version 4.7.0">
+  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
 
-  <meta property="og:title" content="Genepop version 4.6.9" />
+  <meta property="og:title" content="Genepop version 4.7.0" />
   <meta property="og:type" content="book" />
   
   
@@ -18,7 +17,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genepop version 4.6.9" />
+  <meta name="twitter:title" content="Genepop version 4.7.0" />
   
   
   
@@ -34,7 +33,6 @@
   
 
 <link rel="next" href="installing-genepop-and-session-examples.html">
-
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -54,6 +52,7 @@
 </head>
 
 <body>
+
 
 
   <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
@@ -166,7 +165,7 @@
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Genepop version 4.6.9</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Genepop version 4.7.0</a>
           </h1>
         </div>
 
@@ -175,9 +174,9 @@
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Genepop version 4.6.9</h1>
+<h1 class="title">Genepop version 4.7.0</h1>
 <h4 class="author"><em>F. Rousset</em></h4>
-<h4 class="date"><em>This documentation: 14 March 2017</em></h4>
+<h4 class="date"><em>This documentation: 23 August 2017</em></h4>
 </div>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
@@ -199,7 +198,7 @@
 <div id="changes-since-version-4.0" class="section level2">
 <h2><span class="header-section-number">1.3</span> Changes since version 4.0</h2>
 <p></p>
-<p><strong>Version 4.6.9</strong></p>
+<p><strong>Version 4.7.0</strong></p>
 <p>Genepop is now also distributed as an R package. It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used,as described below. Second, test results of previous versions cannot be exactly replicated.</p>
 <p>The format of a few file outputs has been modified (in particular the reporting of extreme values of some global tests).</p>
 <p><strong>Version 4.6</strong></p>
@@ -233,8 +232,9 @@
         </div>
       </div>
 
-<a href="installing-genepop-and-session-examples.html" class="navigation navigation-next navigation-unique" aria-label="Next page""><i class="fa fa-angle-right"></i></a>
-
+<a href="installing-genepop-and-session-examples.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
@@ -243,7 +243,7 @@
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
 <script>
-require(["gitbook"], function(gitbook) {
+gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
 "github": false,
@@ -278,7 +278,7 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:" && /^https?:/.test(script.src))
       script.src  = script.src.replace(/^https?:/, '');
     document.getElementsByTagName("head")[0].appendChild(script);

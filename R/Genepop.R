@@ -1,3 +1,10 @@
+.check_gp_file_name <- function(inputFile) {
+  if (!is.character(inputFile)) stop("'inputFile' must be a character string.")
+  if ( ! tools::file_ext(inputFile) %in% c("","txt") ) warning("Dangerous input file name extension:\n   the genepop code expects either extension '.txt' or no extension.")
+  if( ! file.exists(inputFile) ) stop("'inputFile' not found ")
+  if( file.access(inputFile,mode=4) ) stop("'inputFile' not readable (as tested by file.access(<.>,mode=4)).")
+}
+
 .remove_temp_files <- function() { ## currently this code provides documentation, but the function has no use
   if (FALSE) {
     ## remove temp HW files
@@ -14,11 +21,16 @@
 }
 
 .returnInfo <- function(info, verbose, prestring = "Results are stored in file") {
+  if (file.exists(info)) {
     resu <- paste(prestring, info)
     if (verbose) {
-        cat(paste(prestring, info), "\n")
+      cat(paste(prestring, info), "\n")
     }
     invisible(info)
+  } else {
+    warning(paste("file",info,"*not* created. Check for an earlier problem."))
+    return(NULL)
+  }
 }
 
 #' @name Hardy-Weinberg
@@ -40,8 +52,7 @@
 #' test_HW(locinfile, which='deficit', 'sample.txt.D')
 test_HW <- function(inputFile, which = "Proba", outputFile = "", settingsFile = "", enumeration = FALSE, dememorization = 10000, 
     batches = 20, iterations = 5000, verbose = interactive()) {
-    if (!is.character(inputFile)) 
-        stop("'inputFile' must be a character string.")
+    .check_gp_file_name(inputFile)
     if (which == "Proba") {
         if (settingsFile == "") {
             resu <- RHWEachLocusEachPopulationProbability( inputFile, outputFile, enumeration, 
@@ -134,6 +145,8 @@ HWtable_analysis <- function(inputFile, which = "Proba", settingsFile = "", enum
 #' test_LD(locinfile,'sample.txt.DIS')
 test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, 
     verbose = interactive()) {
+  .check_gp_file_name(inputFile)
+  if ( ! tools::file_ext(inputFile) %in% c("","txt") ) stop("Wrong input file name extension: it should either have extension '.txt' or no extension.")
     if (settingsFile == "") {
         resu <- RGDEachPairLociEachPopulation(inputFile, outputFile, dememorization, 
             batches, iterations)
@@ -173,7 +186,8 @@ write_LD_tables <- function(inputFile, outputFile = "", verbose = interactive())
 #' test_diff(locinfile,outputFile='sample.txt.GE')
 test_diff <- function(inputFile, genic = TRUE, pairs = FALSE, outputFile = "", settingsFile = "", dememorization = 10000, 
     batches = 100, iterations = 5000, verbose = interactive()) {
-    if (genic) {
+  .check_gp_file_name(inputFile)
+  if (genic) {
         if (pairs) {
             if (settingsFile == "") {
                 resu <- RPDGenicAllPairPopulationDifferentiation(inputFile, outputFile, 
@@ -251,7 +265,8 @@ struc <- function(inputFile, settingsFile = "", dememorization = 10000, batches 
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' Nm_private(locinfile,'sample.txt.PRI')
 Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose = interactive()) {
-    resu <- RNmEstimates(inputFile, outputFile, dataType)
+  .check_gp_file_name(inputFile)
+  resu <- RNmEstimates(inputFile, outputFile, dataType)
     .returnInfo(resu, verbose = verbose)
 }
 
@@ -267,7 +282,8 @@ Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' basic_info(locinfile,'sample.txt.INF')
 basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
-    resu <- RDescriptifAlleleAndGenotypeFrequenciesPerLocusPerSample(inputFile, outputFile)
+  .check_gp_file_name(inputFile)
+  resu <- RDescriptifAlleleAndGenotypeFrequenciesPerLocusPerSample(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 
@@ -285,7 +301,8 @@ basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' genedivFis(locinfile,outputFile = 'sample.txt.DIV')
 genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
-    if (sizes) {
+  .check_gp_file_name(inputFile)
+  if (sizes) {
         resu <- RDescriptifGeneDiversitiesAndFisUsingAlleleSize(inputFile, outputFile, 
             dataType)
     } else {
@@ -310,7 +327,8 @@ genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Di
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' Fst(locinfile, outputFile= 'sample.txt.DIV')
 Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
-    if (sizes) {
+  .check_gp_file_name(inputFile)
+  if (sizes) {
         if (pairs) {
             resu <- REstimatingSpatialStructureAlleleSizeAllPopulationsPairs(inputFile, 
                 outputFile, dataType)
@@ -364,6 +382,7 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
     CIcoverage = 0.95, testPoint = 0, minimalDistance = 1e-04, maximalDistance = 1e+09, mantelPermutations = 1000, mantelRankTest = FALSE, 
     verbose = interactive()) {
     mc <- match.call()
+    .check_gp_file_name(inputFile)
     if (statistic %in% c("a", "e", "a-like")) {
         mc[[1L]] <- quote(.GIsolationByDistanceBetweenIndividuals)
         if (statistic == "a-like") 
@@ -419,7 +438,8 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' conversion(locinfile, format='Fstat', 'sample.txt.DAT')
 conversion <- function(inputFile, format, outputFile = "", verbose = interactive()) {
-    resu <- switch(format, Fstat = REcumenicismFstat(inputFile, outputFile), 
+  .check_gp_file_name(inputFile)
+  resu <- switch(format, Fstat = REcumenicismFstat(inputFile, outputFile), 
         BiosysL = REcumenicismBiosysLetter(inputFile, outputFile), 
         BiosysN = REcumenicismBiosysNumber(inputFile, outputFile), 
         Linkdos = REcumenicismLinkdos(inputFile, outputFile), 
@@ -438,7 +458,8 @@ conversion <- function(inputFile, format, outputFile = "", verbose = interactive
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
 nulls <- function(inputFile, outputFile = "", settingsFile = "", nullAlleleMethod = "", CIcoverage = 0.95, verbose = interactive()) {
-    if (settingsFile == "") {
+  .check_gp_file_name(inputFile)
+  if (settingsFile == "") {
         resu <- RNullAlleleEstimateAlleleFrequencies(inputFile, outputFile, nullAlleleMethod, 
             CIcoverage)
     } else {
@@ -461,20 +482,23 @@ nulls <- function(inputFile, outputFile = "", settingsFile = "", nullAlleleMetho
 #' outfile <- diploidize(inputFile = locinfile,outputFile="Dsample.txt")
 
 diploidize <- function(inputFile, outputFile = "", verbose = interactive()) {
-    resu <- RDiploidisationHaploidData(inputFile, outputFile)
+  .check_gp_file_name(inputFile)
+  resu <- RDiploidisationHaploidData(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 
 #' @name manipulation
 relabel_alleles <- function(inputFile, outputFile = "", verbose = interactive()) {
-    resu <- RRelabelingAlleles(inputFile, outputFile)
+  .check_gp_file_name(inputFile)
+  resu <- RRelabelingAlleles(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 
 #' @name manipulation
 #' @name pop_to_indiv
 pop_to_indiv <- function(inputFile, coordinates, outputFile = "", verbose = interactive()) {
-    if (coordinates == "population") {
+  .check_gp_file_name(inputFile)
+  if (coordinates == "population") {
         resu <- RConversionToIndividualDataWithPopulationNames(inputFile, outputFile)
     } else resu <- RConversionToIndividualDataWithIndividualNames(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
@@ -482,7 +506,8 @@ pop_to_indiv <- function(inputFile, coordinates, outputFile = "", verbose = inte
 
 #' @rdname manipulation
 sample_haploid <- function(inputFile, outputFile = "", verbose = interactive()) {
-    resu <- RRandomSamplingOfHaploidGenotypesFromDiploidOnes(inputFile, outputFile)
+  .check_gp_file_name(inputFile)
+  resu <- RRandomSamplingOfHaploidGenotypesFromDiploidOnes(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 

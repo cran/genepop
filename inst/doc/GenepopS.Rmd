@@ -1,15 +1,15 @@
 ---
 title: '`r paste("Genepop version ", genepop::getVersion())`'
-author: F. Rousset
-date: "`r lct <- Sys.getlocale('LC_TIME'); Sys.setlocale('LC_TIME', 'C');dat <-format(Sys.time(), 'This documentation: %d %B %Y');Sys.setlocale('LC_TIME', lct);dat`"
-bibliography: genepop.bib
-documentclass: book
+author: "F. Rousset"
+date: '`r genepop:::.getDocDate()`'
 output:
   bookdown::pdf_book:
     keep_tex: yes
   bookdown::gitbook: default
   html_document: default
   pdf_document: default
+documentclass: book
+fontsize: 12pt
 header-includes:
 - \usepackage{makeidx}
 - \usepackage[utf8]{luainputenc}
@@ -23,7 +23,7 @@ header-includes:
 - \newcommand{\optN}[2]{1}
 - \newcommand{\afaire}[1]{\textcolor{red}{\textbf{1}}}
 - \newcommand{\webpage}{\href{http://kimura.univ-montp2.fr/~rousset/Genepop.htm}{Genepop}}
-fontsize: 12pt
+bibliography: genepop.bib
 biblio-style: plain
 ---
 <!-- Manually run bookdown [using library(bookdown)] to produce the html files --> 

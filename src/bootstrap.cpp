@@ -111,7 +111,7 @@ int CABCbootstrap::bootstrapOverLoci(double (*estimatingFnPtr)(vector<double> d)
                                      string bootOutfile,bool clear_screen) {
     ofstream bootOut;
     estimFnPtr=estimatingFnPtr;
-    testLegend=legend;
+    testLegend=legend; // copy to namespace variable used by other function
     //nb_units is a numbere of relevant loci (in particular with the relevant ploidy)
     // it is the function called through estimatingFnPtr that must map the weights to the chosen subset of loci
     // using a set of indices for the mapping (see varForBootstrapGenepop::idxPloid in wrapper() )
@@ -316,7 +316,7 @@ int CABCbootstrap::bootstrapOverLoci(double (*estimatingFnPtr)(vector<double> d)
         bootOut<<"\n ABC bootstrap results"<<legend<<":";
 	    bootOut<<"\n Point estimate and "<<100*widthCI<<"% confidence interval:\n"<<t0<<" [ "<<tinf<<" , "<<tsup<<" ]\n";
  	}
- 	if ( ! std::isnan(testPointslope)) {
+ 	if ( std::strcmp(legend.c_str(), " for slope")==0 && ! std::isnan(testPointslope)) {
  	    //FR->FR comme on n'est pas surde travailler sur des slopes ici, il faut un mecanisme genre migraine sur les testPoint
         testPointPvalue=Pvalue(testPointslope,true,false);
         if (std::isnan(testPointPvalue)) Pvalue(testPointslope,true,true); // verbose version

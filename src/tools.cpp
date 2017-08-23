@@ -53,7 +53,7 @@ static bool Grestrict = false;
 
 using namespace std;
 
-int genepop_exit(int error, const char *message){
+int genepop_exit(int error, const char *message){ // error=-1 for error, O for normal
 #ifdef COMPATIBILITYRCPP
   throw(Rcpp::exception(message,"tools.cpp",4));
 #else
@@ -64,7 +64,7 @@ int genepop_exit(int error, const char *message){
 
 // [[Rcpp::export]]
 void Rinterrupt_genepop() {
-  genepop_exit(-1,"Interruption of genepop"); // (FR:) is -1 the correct value? not documented
+  genepop_exit(-1,"Interruption of genepop"); 
 }
 
 void clean_temp_file(int locus, int population) {

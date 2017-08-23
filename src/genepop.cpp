@@ -94,8 +94,8 @@ const string strEMPTY = "";
   #ifdef _WIN32
     #include <windows.h>
   #endif
-#endif 
- 
+#endif
+
 void _gotoxy(int x,int y) {
    //    printf("\033[%d;%dH",y+1,x+1);
   #ifdef COMPATIBILITYRCPP
@@ -125,10 +125,10 @@ void effacer_ecran() {
   _gotoxy(0,0);
 }
 
- 
- 
+
+
 #ifdef COMPATIBILITYRCPP
-  int wherey() {return(0);} 
+  int wherey() {return(0);}
 #else
   #ifdef _WIN32
         // wherex/y() added 2015/02/04
@@ -167,7 +167,7 @@ with minor modifs
 
 static inline int rd(const int fd) {
     unsigned char   buffer[4];
-    ssize_t         n; //to store values at least in the range [-1, SSIZE_MAX] 
+    ssize_t         n; //to store values at least in the range [-1, SSIZE_MAX]
 
     while (1) {
         n = read(fd, buffer, 1);
@@ -364,7 +364,7 @@ int cmp_nocase(const string& s, const string& s2) {
 		++p; ++p2;
 	}
 	if (s2.size()<s.size()) {
-	             // capture un \r (code 13) sous windows - shiny !     
+	             // capture un \r (code 13) sous windows - shiny !
 	  if (locdebugbool) RnoR_cerr<<s<<s.size()<<"|"<<int(s[s.size()-1])<<"|"<<s2<<s2.size()<<s2[s2.size()-1]<<"_";
 	  return(-1);
 	} else if (s2.size()>s.size()) {
@@ -474,15 +474,15 @@ CLocus::CLocus(size_t identifiant, string locName) {
 	galleleMax=0; //NOM d'allele max
 }
 
-CLocus::~CLocus() {} /*If a class is defined in a header file and has a vtable 
-     (either it has virtual methods or it derives from classes with virtual methods), 
-it must always have at least one out-of-line virtual method in the class. 
-Without this, the compiler will copy the vtable and RTTI into every .o 
+CLocus::~CLocus() {} /*If a class is defined in a header file and has a vtable
+     (either it has virtual methods or it derives from classes with virtual methods),
+it must always have at least one out-of-line virtual method in the class.
+Without this, the compiler will copy the vtable and RTTI into every .o
 file that #includes the header, bloating .o file sizes and increasing link times.
 
      out of line := not in header file
      */
-    
+
 // ------------------------------------------------------------------------------------------
 // CLocusGP ---------------------------------------------------------------------------------
 
@@ -876,7 +876,7 @@ int CFichier_genepop::parseFile() {
 	do {    //seek first pop and reads locus names meanwhile
 	  //		inFile.get(toto, MAX_LINE_SIZE); buf = toto; inFile.ignore(1);
 	  getline(inFile,buf);
-	  if (inFile.eof()) { // found end of file before first pop  
+	  if (inFile.eof()) { // found end of file before first pop
 #ifdef COMPATIBILITYRCPP
 	    // Rcpp::R
 #else
@@ -1441,7 +1441,7 @@ CGenobilocus CFichier_genepop::read_bilocus(size_t pop,size_t loc1,size_t loc2) 
         //ici while (iLoc<loc2); planterait si genotypes sur 2 lignes et loc2 sur la premiere ligne
         // car iLoc serait r['e]initialis['e] [`a] la lecture de la 2e ligne
         iLoc++;
-			} while (iLoc<nbLocMinusOne);
+			} while (iLoc<=nbLocMinusOne);
     }	// fin analyse individu
 	} while (!inFile.eof()); //on a pu sortir au break....
 	inFile.close();
@@ -1659,14 +1659,14 @@ vector<vector<double> >::iterator popi,popj;
     RnoR_cerr<<"computeCheckWriteDistMat cannot open file "<<file;
     if (cinGetOnError) cin.get();
     genepop_exit(1, "computeCheckWriteDistMat cannot open file ");
-  } 
+  }
   for(popj=coord_pop.begin()+1;popj!=coord_pop.end();popj++) {
      for(popi=coord_pop.begin();popi!=popj;popi++) {//cout<<(*popj)[0]<<" "<<(*popi)[0]<<" "<<(*popj)[1]<<" "<<(*popi)[1];getchar();
        carre1=pow((*popj)[0]-(*popi)[0],2);
        carre2=pow((*popj)[1]-(*popi)[1],2);
        pot=sqrt(carre1+carre2);
        if (pot>maxpot) maxpot=pot;
-       stre<<fixed <<setprecision(15)<<pot<<" "; 
+       stre<<fixed <<setprecision(15)<<pot<<" ";
       }
      stre<<endl;
    }
@@ -1683,7 +1683,7 @@ if (maxpot==0) return -1; else return 0;
 
 // ------------------------------------------------------------------------------------------
 // CGenotypes -------------------------------------------------------------------------------
-// tentative template version in genotypes.h up to version 4.6, never used and fillGenotypes 
+// tentative template version in genotypes.h up to version 4.6, never used and fillGenotypes
 //    was not yet correct
 
 // renvoie vrai si le g['e]notype <genotype> existe
@@ -1693,11 +1693,11 @@ bool CGenotypes::genotypeExists(size_t genotype) {
 }
 
 // renvoie l'effectif du g['e]notype <genotype>
-unsigned long int CGenotypes::getEffective(ssize_t genotype) { // ssize_t convenient when genotype comes from getNext() 
+unsigned long int CGenotypes::getEffective(ssize_t genotype) { // ssize_t convenient when genotype comes from getNext()
   if (genotypeExists(size_t(genotype))) { return genotypes[size_t(genotype)]; } else { return 0; }
 }
 
-unsigned long int CGenotypes::getEffective(size_t genotype) { // ssize_t convenient when genotype comes from getNext() 
+unsigned long int CGenotypes::getEffective(size_t genotype) { // ssize_t convenient when genotype comes from getNext()
   if (genotypeExists(genotype)) { return genotypes[genotype]; } else { return 0; }
 }
 

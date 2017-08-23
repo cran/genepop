@@ -89,7 +89,7 @@ using namespace std;
 //string version=" v4.0 (Built on "+datestring+" at "+timestring+").";
 //string version="4.6";
 std::string getSetting(const std::string which) {
-  const std::string version="4.6.9"; // the O N L Y place to story this info. 
+  const std::string version="4.7.0"; // the O N L Y place to story this info.
   if (which.compare("version")==0) return(version);
   if (which.compare("default_settingsfile")==0) return("genepop.txt");
   return("unknown 'which' value");
@@ -215,7 +215,7 @@ bool confirmed=false;
             signcheck=atol(choix.c_str()); // missing number treated as 0
             if (signcheck<0) {
               RnoR_cerr<<"negative values are not allowed"<<endl;
-            } else {            
+            } else {
               batchnbr=size_t(signcheck);
               if (batchnbr==0){
                 batchnbr=setting;
@@ -237,7 +237,7 @@ bool confirmed=false;
             signcheck=atol(choix.c_str()); // missing number treated as 0
             if (signcheck<0) {
               RnoR_cerr<<"negative values are not allowed"<<endl;
-            } else {            
+            } else {
               batchlgth=size_t(signcheck);
               if (batchlgth==0){
                 batchlgth=setting;
@@ -746,7 +746,7 @@ switchFnPtr=&Cctable::switchSP; // pas de statistique G allelique
                 wdisOut<<">"<<setw(9)<<fisher;
               } else {
                 wdisOut<<setw(10)<<fisher;
-              }              
+              }
               chi2(pchi,ddl,float(fisher));
               wdisOut<<setw(5)<<ddl;
               if(pchi != -1){
@@ -755,7 +755,7 @@ switchFnPtr=&Cctable::switchSP; // pas de statistique G allelique
                   wdisOut<<"<"<< setw(7)<<fixed<<pchi<<endl;
                 } else {
                   wdisOut<<setw(8)<<fixed<<pchi<<endl;
-                }              
+                }
               } else{
                 wdisOut<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -814,7 +814,7 @@ if (liptakBool) // false pour l'instant, mais garder le code
                   wdisOut<<"<"<<setw(7)<<fixed<<liptak<<endl;
                 }else{
                   wdisOut<<setw(8)<<fixed<<liptak<<endl;
-                } 
+                }
               } else{
                 wdisOut<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -1170,12 +1170,12 @@ bool affichIntermBool=false;
                 } // next p
                 fichier_out<<setw(13)<<fichier_genepop->pops[mm]->popName().substr(0,13)<<" & "<<setw(14)<<fichier_genepop->pops[ll]->popName().substr(0,13);
                 if(ddl > 0){
-                  
+
                   if (infini) {
                     fichier_out<<">"<<setw(9)<<fisher;
                   } else {
                     fichier_out<<setw(10)<<fisher;
-                  }              
+                  }
                   chi2(pchi,ddl,float(fisher));
                   fichier_out<<setw(5)<<ddl;
                   if(pchi != -1){
@@ -1184,10 +1184,10 @@ bool affichIntermBool=false;
                       fichier_out<<"<"<< setw(7)<<fixed<<pchi<<endl;
                     } else {
                       fichier_out<<setw(8)<<fixed<<pchi<<endl;
-                    }              
+                    }
                   } else{
                     fichier_out<<"Highly sign."<<endl;
-                  } 
+                  }
                 }else{
                    fichier_out<<"Not possible"<<endl;
                 } // if nu
@@ -1245,7 +1245,7 @@ bool affichIntermBool=false;
                       fichier_out<<"<"<<setw(7)<<fixed<<liptak<<endl;
                     }else{
                       fichier_out<<setw(8)<<fixed<<liptak<<endl;
-                    } 
+                    }
                    } else{
                       fichier_out<<"Highly sign."<<endl;
                    } // if infini et pchi
@@ -1292,7 +1292,7 @@ bool affichIntermBool=false;
                 fichier_out<<"All: Chi2< "<<fisher;
               } else {
                 fichier_out<<"All: Chi2= "<<fisher;
-              }              
+              }
               fichier_out<<" (df= "<<ddl<<")";
               chi2(pchi,ddl,float(fisher));
               fichier_out.precision(6);
@@ -1302,10 +1302,10 @@ bool affichIntermBool=false;
                    fichier_out<<", P-value< "<<pchi<<endl;
                  }else{
                    fichier_out<<", P-value= "<<pchi<<endl;
-                 } 
+                 }
                } else{
                   fichier_out<<", highly significant"<<endl;
-               } 
+               }
             }else{
                fichier_out<<"All: not possible"<<endl;
             } // if nu
@@ -1349,7 +1349,7 @@ bool affichIntermBool=false;
                 fichier_out<<"All: Z< "<<liptak;
               } else {
                 fichier_out<<"All: Z= "<<liptak;
-              }              
+              }
               fichier_out<<" ("<<ntests<<" tests)";
               liptak=ndtr(liptak/sqrt(ntests));
               fichier_out.precision(6);
@@ -1358,7 +1358,7 @@ bool affichIntermBool=false;
                   fichier_out<<", P-value< "<<liptak<<endl;
                 }else{
                   fichier_out<<", P-value= "<<liptak<<endl;
-                } 
+                }
               } else{
                 fichier_out<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -1562,7 +1562,7 @@ using namespace NS_GP;
 		        wdisOut<<"    Observed number of homozygotes  : "<<homobs<<endl;
 		        wdisOut<<"    Expected number of heterozygotes: "<<hetero<<endl;
 		        wdisOut<<"    Observed number of heterozygotes: "<<heterobs<<endl<<endl;
-		        
+
 		        wdisOut<<endl<<endl<<"    Allele frequencies and Fis:"<<endl;
 		        wdisOut<<"    -------------------------------------------------------"<<endl;
 		        wdisOut<<"                                           Fis"<<endl;
@@ -1660,7 +1660,7 @@ using namespace NS_GP;
 	vector<int>NtotLoc;
 	vector<double>SSiTotLoc;
 	NLocHez.resize(nb_sam); // pour heterosigo unweighted over loci for each pop: Nombre loci avec Ntot>0
-	vector<double>SSgTotLoc;  
+	vector<double>SSgTotLoc;
 	MSgTotHez.resize(nb_sam); // idem, la somme des MSg non pond?r?e
     NLoc.resize(nb_sam);
     NtotLoc.resize(nb_sam);
@@ -2815,7 +2815,7 @@ int estimNull() {
   bool locdebug=false;
 using namespace NS_GP;
  vector<vector<double> >tabFnull; // tableau frequence null allele...
- vector<vector<double> >tabBeta; // 
+ vector<vector<double> >tabBeta; //
  char coding;
  vector<vector<vector<double> > >bounds; // tableau frequence null allele...
  ofstream fichier_out;
@@ -3061,7 +3061,12 @@ int choix=0;
 int FstIBD() {
 using namespace NS_GP;
 int choix=0;
-while (choix != 8) {
+
+if (fichier_genepop->pops.size()==1) {
+  RnoR_cerr<<"(!) Only one 'pop' in input file: no information for genetic differentiation."<<endl;
+}
+
+while (choix != 8) { // FR 2017/08/18: why not 7 ?
              if(exit_genepop) {return 0;}  //ADD by jimmy
              effacer_ecran();
              afficher_version();
@@ -3508,7 +3513,7 @@ int mainJimmy(int argc, string argv[]) {
   // ...(cmdlinefilename.c_str()) finds the gp_file :
   if (argc>1) read_settings_file(cmdlinefilename.c_str());
   alea.seed(alea_seed);
-#ifdef COMPATIBILITYRCPP  
+#ifdef COMPATIBILITYRCPP
   // wrong idea. Use std::mt19937 instead
   // set_seed(alea_seed); // set the seed in  the base environment of R
 #endif

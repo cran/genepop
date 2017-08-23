@@ -1876,7 +1876,7 @@ ofstream iso;
 return output;
 }  /*  end, calcwritecorw  */
 
-void mantelTest(bool clearscreen, bool rankBool) { // both true by default cf declaration
+void mantelTest(bool clearscreen, bool rankBool) { // no declaration defaults for the arguments
 using namespace datamatrix;
 using namespace NS_F_est;
 //Mantel test

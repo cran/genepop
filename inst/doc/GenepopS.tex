@@ -24,7 +24,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Genepop version 4.6.9},
+            pdftitle={Genepop version 4.7.0},
             pdfauthor={F. Rousset},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -74,7 +74,7 @@
 }
 
 \setlength{\droptitle}{-2em}
-  \title{Genepop version 4.6.9}
+  \title{Genepop version 4.7.0}
   \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
   \author{F. Rousset}
@@ -82,7 +82,7 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{This documentation: 12 March 2017}
+  \date{This documentation: 23 August 2017}
 
 \usepackage{makeidx}
 \usepackage[utf8]{luainputenc}
@@ -97,6 +97,20 @@
 \newcommand{\afaire}[1]{\textcolor{red}{\textbf{1}}}
 \newcommand{\webpage}{\href{http://kimura.univ-montp2.fr/~rousset/Genepop.htm}{Genepop}}
 
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\theoremstyle{definition}
+\newtheorem{example}{Example}[chapter]
+\theoremstyle{definition}
+\newtheorem{exercise}{Exercise}[chapter]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{solution}{Solution}
 \begin{document}
 \maketitle
 
@@ -155,7 +169,7 @@ documentation.
 
 \index{Genepop@\Genepop, differences from previous versions}
 
-\textbf{Version 4.6.9}
+\textbf{Version 4.7.0}
 
 Genepop is now also distributed as an R package. It now uses the
 implementation of the Mersenne twister pseudo-random number generator

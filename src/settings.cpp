@@ -59,6 +59,35 @@ string Mode="Default";
 int typeindex1,typeindex2;
 double testPointslope=numeric_limits<double>::quiet_NaN();
 
+// As the Rcpp-Exported functions use explicit assignments such as agv[10] = getOptionMantelPermutations(mantelPermutations)
+// Then <keyword>=FALSE sets the boolean to true in cases where the <value> was ignored with default = false
+// Then we nned the following function:
+
+int evaluateBool(bool &boolean, string buf) { // safe assignment of value `buf' to 'boolean'
+  stringstream strstr(buf);
+  string locstring;
+  strstr>>locstring;
+  if(cmp_nocase(locstring,"")==0 || cmp_nocase(locstring,"T")==0 ||
+     cmp_nocase(locstring,"True")==0 || cmp_nocase(locstring,"Yes")==0 ||
+     cmp_nocase(locstring,"Y")==0)
+    boolean=true;
+  else if(cmp_nocase(locstring,"F")==0 || cmp_nocase(locstring,"False")==0 ||
+          cmp_nocase(locstring,"No")==0 || cmp_nocase(locstring,"N")==0)
+    boolean=false;
+  else {
+#ifdef COMPATIBILITYRCPP
+#else
+    cout<<"(!) Suspicious specification for a boolean: "<< buf <<endl;
+    cout<<"(!) Only \"\", \"T\", \"True\", \"Yes\", \"Y\", \"F\", \"False\", \"No\", and \"N\" are allowed"<<endl;
+    cout<<"I exit."<< endl;
+    if (cinGetOnError) cin.get();
+#endif
+    genepop_exit(-1, "Suspicious specification for a boolean.");
+  }
+  return(0);
+}
+
+
 int seeks_settings_file_name(const string& cmdlinefilename,string& ref_settingsfilename) {
     string buf,var;
     size_t pos;
@@ -479,11 +508,11 @@ but no new value is read -> the last value is duplicated */
         			goto nextline;
         		}
         		if(cmp_nocase(var,"MantelRankTest")==0) {
-        		    mantelRankBool=true;
+        		  evaluateBool(mantelRankBool,buf.substr(pos+1));
         			goto nextline;
         		}
                 if(cmp_nocase(var,"MeanDifferentiationTest")==0) {
-                    meanDiffBool=true;
+                  evaluateBool(meanDiffBool,buf.substr(pos+1));
                     goto nextline;
                 }
                 if(cmp_nocase(var,"MantelSeed")==0) { /*not documented in GenepopS documentation*/
@@ -492,7 +521,7 @@ but no new value is read -> the last value is duplicated */
         			goto nextline;
         		}
         		if(cmp_nocase(var,"PhylipMatrix")==0) {
-                    phylipBool=true;
+        		  evaluateBool(phylipBool,buf.substr(pos+1));
         			goto nextline;
         		}
         		if(cmp_nocase(var,"RandomSeed")==0) { //tout sauf Mantel
