@@ -4,7 +4,6 @@
 \alias{diploidize}
 \alias{manipulation}
 \alias{relabel_alleles}
-\alias{manipulation}
 \alias{pop_to_indiv}
 \alias{sample_haploid}
 \title{Various data manipulation utilities}
@@ -31,8 +30,9 @@ sample_haploid(inputFile, outputFile = "", verbose = interactive())
 Various procedures described in the linked sections of the Genepop executable documentation: \href{../doc/all-menu-options.html#sub-option-2-diploidisation-of-haploid-data}{diploidize} haploid data, \href{../doc/all-menu-options.html#sub-option-3-relabeling-alleles-names}{relabel_alleles}, \href{../doc/all-menu-options.html#sub-option-6-random-sampling-of-haploid-genotypes-from-diploid-ones}{sample_haploid}, and \href{../doc/all-menu-options.html#sub-options-4-and-5-conversion-of-population-data-to-individual-data}{pop_to_indiv}. The latter procedure converts population samples (several individuals in each population) to individual data. The names given to the individuals in the new file created (names which are to be interpreted as coordinates in a spatial analysis) may be the population coordinates (given as the name of the last individual in the original data file), or each individual's coordinates (given as the name of each individual in the original data file).
 }
 \examples{
-infile <- system.file("extdata", "sample.txt",package="genepop")
+infile <- system.file('extdata', 'sample.txt',package='genepop')
 locinfile <- "sample.txt"
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 outfile <- diploidize(inputFile = locinfile,outputFile="Dsample.txt")
+if ( ! interactive()) clean_workdir(c("sample.txt", "Dsample.txt"))
 }

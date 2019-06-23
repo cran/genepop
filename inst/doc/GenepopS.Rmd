@@ -5,8 +5,8 @@ date: '`r genepop:::.getDocDate()`'
 output:
   bookdown::pdf_book:
     keep_tex: yes
-  bookdown::gitbook: default
   html_document: default
+  bookdown::gitbook: default
   pdf_document: default
 documentclass: book
 fontsize: 12pt
@@ -27,6 +27,7 @@ bibliography: genepop.bib
 biblio-style: plain
 ---
 <!-- Manually run bookdown [using library(bookdown)] to produce the html files --> 
+<!-- (see inst/doc/README.txt for further info) -->
 <!-- the '%\...' is required for R CMD build to detect a vignette: --> 
 <!-- Here inactivated since we no longer build a vignette -->
 <!--  %\VignetteIndexEntry{Documentation for the Genepop executable}
@@ -62,10 +63,18 @@ Changes since version 4.0
 -------------------------
 \index{Genepop@\Genepop, differences from previous versions}
 
-**Version `r genepop::getVersion()`**
+<!-- **Version `r genepop::getVersion()`** -->
+
+**Version 4.7.2**
+
+A new keyword `intra_all_types` for setting "popTypeSelection" allows one to perform a single spatial regression (but not Mantel tests) for all pairs of individuals or populations within types (e.g., individuals within patches, excluding pairwise statistics for pairs of individuals between patches).
+
+Yet another problem has been fixed for Mantel tests' handling of missing pairwise genetic information (specifically for pairs of "pop" -- most likely, individuals -- sharing no genotypic information at any locus). 
+
+**Version 4.7.1**
 
 Genepop is now also distributed as an R package. 
-It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used,as described below. Second, test results of previous versions cannot be exactly replicated.   
+It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used, as described below. Second, test results of previous versions cannot be exactly replicated.   
 
 The format of a few file outputs has been modified (in particular the reporting of extreme values of some global tests). 
 
@@ -73,11 +82,11 @@ The format of a few file outputs has been modified (in particular the reporting 
 
 A bootstrap analysis of mean differentiation has been introduced, in particular to allow comparison of the mean differentiation observed over a given range of geographical distances, in intra vs. inter-ecotypic analyses. It can be called by the setting `meanDifferentiationTest`.
 
-The Mantel test based on regression slope (not the one on ranks) was not handling appropriately cases where some pairwise data had to be excluded. This is corrected. Such cases concern in particular pairs of samples in the same location (e.g., pairs of individuals), when geographical distance is log-transformed, because the pairwise differentiation between such individuals cannot be used for the computation of the regression. The bootstrap analyses ere already handling correctly this case.
+The Mantel test based on regression slope (not the one on ranks) was not handling appropriately cases where some pairwise data had to be excluded. This is corrected. Such cases concern in particular pairs of samples in the same location (e.g., pairs of individuals), when geographical distance is log-transformed, because the pairwise differentiation between such individuals cannot be used for the computation of the regression. The bootstrap analyses were already handling correctly this case.
 
 **Version 4.5**
 
-A new keyword `inter_all_pairs` for setting "popTypeSelection" allows one to perform spatial regressions (but not Mantel tests) between all pairs of individuals or populations belonging to different types (e.g., individuals belonging to different patches, excluding pairwise statistics for pairs of individuals within patches).
+A new keyword `inter_all_types` for setting "popTypeSelection" allows one to perform spatial regressions (but not Mantel tests) between all pairs of individuals or populations belonging to different types (e.g., individuals belonging to different patches, excluding pairwise statistics for pairs of individuals within patches).
 
 **Version 4.4**
 
@@ -757,7 +766,7 @@ The settings `PopTypes` and `PopTypeSelection` have been developed to facilitate
 
 `PopTypes` allows to distinguish different types of samples (e.g. different ecotypes) by integer indices. The number of indices must match the number of samples in the data file.
 
-`PopTypeSelection` allows performing analyses (genetic distance regressions, confidence intervals, Mantel tests) only on pairs of populations belonging to the types specified. That is, the genetic differentiation statistic among excluded pairs is not used in any of these analyses. The different choices are shown above: `all` excludes no pairs (this is the default value); `inter` $a$ $b$ will exclude all pairs that do not involve both types $a$ and $b$ (only two types can be specified); and `only` $a$ will exclude all pairs that involve a type different from $a$ (only one type can be specified). For the latter two choices, permutations are made only among samples from a given type. `inter_all_pairs` excludes all pairs within types; no Mantel test is performed in that case.
+`PopTypeSelection` allows performing analyses (genetic distance regressions, confidence intervals, Mantel tests) only on pairs of populations belonging to the types specified. That is, the genetic differentiation statistic among excluded pairs is not used in any of these analyses. The different choices are shown above: `all` excludes no pairs (this is the default value); `inter` $a$ $b$ will exclude all pairs that do not involve both types $a$ and $b$ (only two types can be specified); and `only` $a$ will exclude all pairs that involve a type different from $a$ (only one type can be specified). For the latter two choices, permutations are made only among samples from a given type. `inter_all_types` excludes all pairs within types; no Mantel test is performed in that case. `intra_all_types` keeps all pairs within types, and performs a single regression for all types; again, no Mantel test is performed in that case.
 
 You have to perform the "`only`" and "`inter`" analyses in distinct Genepop runs if you wish to compare their results. @Rousset99g explains how inferences can be made from such comparisons. Note that in this perspective, some comparison of the intercept may be useful and that Genepop also provides confidence intervals on the intercept at zero distance [or log(distance)].
 
@@ -823,7 +832,7 @@ The following menu appears[^21]
 Evaluating the performance of inferences for Isolation by distance
 ==================================================================
 
-Genepop can analyze multiple files, using the settings settings
+Genepop can analyze multiple files, using the settings settings
 
      GenepopRootFile=file                   <-- or GenepopRootFileName...
      JobMin=1
@@ -832,7 +841,7 @@ Genepop can analyze multiple files, using the settings settings
  \index{GenepopRootFile setting}
  \index{JobMin}
  \index{JobMax}
-This will perform analysis of data in files `file`1 to `file`100. Default values of these three settings are `GP`, 1, and 1. Users need to assemble results from the multiple output files. A more integrated output is provided for analyses of isolation by distance. For the regression estimators of $D\sigma^2$ (menu options 6.5 and 6.6), the `result.CI` file will contain a Table of point estimates, bootstrap confidence intervals, and (if requested using the `testPoint` setting) the bootstrap P-value for a given tested neighborhood value. including the performance of the bootstrap confidence intervals.
+This will perform analysis of data in files `file`1 to `file`100. Default values of these three settings are `GP`, 1, and 1. Users need to assemble results from the multiple output files. A more integrated output is provided for analyses of isolation by distance. For the regression estimators of $D\sigma^2$ (menu options 6.5 and 6.6), the `result.CI` file will contain a table of point estimates, bootstrap confidence intervals, and (if requested using the `testPoint` setting) the bootstrap P-value for a given tested neighborhood value. including the performance of the bootstrap confidence intervals.
 
 The `Performance=`*value* setting\index{Performance setting} provides a convenient (if somewhat ad hoc) shortcut for selecting the following analyses:
 

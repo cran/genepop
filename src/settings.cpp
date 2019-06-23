@@ -498,7 +498,9 @@ but no new value is read -> the last value is duplicated */
                		} else if(cmp_nocase(typeSelection,"inter")==0) {
                		    strstr>>typeindex1>>typeindex2;
                		} else if(cmp_nocase(typeSelection,"inter_all_types")==0) {
-               		    typeSelection="inter_all_types";
+               		  typeSelection="inter_all_types";
+               		} else if(cmp_nocase(typeSelection,"intra_all_types")==0) {
+               		  typeSelection="intra_all_types";
                		} else typeSelection="all";
         			goto nextline;
         		}

@@ -38,8 +38,10 @@ infile <- system.file('extdata', 'sample.txt',package='genepop')
 locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 test_LD(locinfile,'sample.txt.DIS')
+if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 infile <- system.file('extdata', 'sample.txt',package='genepop')
 locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 write_LD_tables(locinfile,'sample.txt.TAB')
+if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

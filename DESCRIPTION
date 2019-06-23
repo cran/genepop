@@ -1,7 +1,8 @@
 Package: genepop
 Type: Package
 Title: Population Genetic Data Analysis Using Genepop
-Version: 1.0.5
+Version: 1.1.2
+Date: 2019-06-23
 Authors@R: c(person("François", "Rousset", role = c("aut", "cre", "cph"),
                      email = "francois.rousset@umontpellier.fr"),
                      person("Jimmy","Lopez", role="ctb"),
@@ -11,16 +12,17 @@ Description: Makes the Genepop software available in R. This software implements
 License: CeCILL-2
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.7)
-LinkingTo: Rcpp
+Imports: Rcpp (>= 0.12.10), stringr
+LinkingTo: Rcpp, RcppProgress
 Suggests: testthat, knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
+ByteCompile: true
 URL: https://www.r-project.org,
         http://kimura.univ-montp2.fr/~rousset/Genepop.htm
 NeedsCompilation: yes
-Packaged: 2017-08-23 16:40:52 UTC; Francois.rousset
+Packaged: 2019-06-23 19:51:31 UTC; Francois.rousset
 Author: François Rousset [aut, cre, cph],
   Jimmy Lopez [ctb],
   Khalid Belkhir [ctb]
 Repository: CRAN
-Date/Publication: 2017-08-23 16:54:12 UTC
+Date/Publication: 2019-06-23 20:10:03 UTC

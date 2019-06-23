@@ -26,4 +26,5 @@ infile <- system.file('extdata', 'sample.txt',package='genepop')
 locinfile <- 'sample.txt'
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 conversion(locinfile, format='Fstat', 'sample.txt.DAT')
+if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

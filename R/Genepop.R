@@ -26,6 +26,7 @@
     if (verbose) {
       cat(paste(prestring, info), "\n")
     }
+    info <- structure(info,class=c(class(info),"GP_outfile"))
     invisible(info)
   } else {
     warning(paste("file",info,"*not* created. Check for an earlier problem."))
@@ -35,8 +36,8 @@
 
 #' @name Hardy-Weinberg
 #' @title Tests of Hardy-Weinberg genotypic proportions
-#' @description Compute variants of the exact conditional test for Hardy-Weinberg genotypic proportions.  The tests differ by their test statistics. \code{HWtable_analysis} handles a single table of genotype counts, and \code{test_HW} requires a standard genepop input file. See \href{../doc/all-menu-options.html#option-1-hardy-weinberg-hw-exact-tests}{this section} of the Genepop executable documentation for more information on the statistical methods.
-#' @param inputFile character: The path of the input file, in Genepop format
+#' @description Compute variants of the exact conditional test for Hardy-Weinberg genotypic proportions.  The tests differ by their test statistics. \code{HWtable_analysis} handles a single table of genotype counts, and \code{test_HW} requires a standard genepop input file. See \href{../doc/all-menu-options.html#option-1-hardy-weinberg-hw-exact-tests}{this section} of the Genepop-executable documentation for more information on the statistical methods.
+#' @param inputFile character: The path of the input file. For \code{test_HW}, this file should be in Genepop format. For \code{HWtable_analysis}, it should be in ad hoc format illustrated by sample file \code{Rhesus.txt} used in the Examples section, and further detailed in \href{../doc/all-menu-options.html#analyzing-a-single-genotypic-matrix}{this section} of the Genepop-executable documentation.
 #' @param which character: \code{'Proba'}, \code{'excess'}, and \code{'deficit'} to perform the probability test, score test for excess, and score tests for deficit, respectively, in each population and for each locus. \code{test_HW} additionally handles \code{'global excess'} and  \code{'global deficit'} for global tests for all loci and/or all populations, and \code{HWtable_analysis} additionally handles \code{'Fis'} to report basic information (allele frequencies and Fis).
 #' @param outputFile character: The path of the output file
 #' @param settingsFile character: The path of the settings file
@@ -50,6 +51,7 @@
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' test_HW(locinfile, which='deficit', 'sample.txt.D')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_HW <- function(inputFile, which = "Proba", outputFile = "", settingsFile = "", enumeration = FALSE, dememorization = 10000, 
     batches = 20, iterations = 5000, verbose = interactive()) {
     .check_gp_file_name(inputFile)
@@ -100,6 +102,7 @@ test_HW <- function(inputFile, which = "Proba", outputFile = "", settingsFile = 
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' outfile <- HWtable_analysis(locinfile,which='Proba',batches = 1000,iterations = 1000)
 #' readLines(outfile)[21]
+#' #clean_workdir(otherfiles='Rhesus.txt')
 HWtable_analysis <- function(inputFile, which = "Proba", settingsFile = "", enumeration = FALSE, dememorization = 10000, batches = 20, 
     iterations = 5000, verbose = interactive()) {
     if (which == "Fis") {
@@ -143,6 +146,7 @@ HWtable_analysis <- function(inputFile, which = "Proba", settingsFile = "", enum
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' test_LD(locinfile,'sample.txt.DIS')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, 
     verbose = interactive()) {
   .check_gp_file_name(inputFile)
@@ -162,6 +166,7 @@ test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorizatio
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' write_LD_tables(locinfile,'sample.txt.TAB')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 write_LD_tables <- function(inputFile, outputFile = "", verbose = interactive()) {
     resu <- RGDGenotypicContingency(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
@@ -184,6 +189,7 @@ write_LD_tables <- function(inputFile, outputFile = "", verbose = interactive())
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' test_diff(locinfile,outputFile='sample.txt.GE')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_diff <- function(inputFile, genic = TRUE, pairs = FALSE, outputFile = "", settingsFile = "", dememorization = 10000, 
     batches = 100, iterations = 5000, verbose = interactive()) {
   .check_gp_file_name(inputFile)
@@ -242,6 +248,7 @@ test_diff <- function(inputFile, genic = TRUE, pairs = FALSE, outputFile = "", s
 #' locinfile <- 'structest.txt'
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' struc(locinfile)
+#' if ( ! interactive()) clean_workdir(otherfiles='structest.txt')
 struc <- function(inputFile, settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, verbose = interactive()) {
     if (settingsFile == "") {
         resu <- RAnalyzingSingleContingencyTable(inputFile, dememorization, batches, 
@@ -264,6 +271,7 @@ struc <- function(inputFile, settingsFile = "", dememorization = 10000, batches 
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' Nm_private(locinfile,'sample.txt.PRI')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   resu <- RNmEstimates(inputFile, outputFile, dataType)
@@ -281,6 +289,7 @@ Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' basic_info(locinfile,'sample.txt.INF')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   resu <- RDescriptifAlleleAndGenotypeFrequenciesPerLocusPerSample(inputFile, outputFile)
@@ -300,6 +309,7 @@ basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' genedivFis(locinfile,outputFile = 'sample.txt.DIV')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   if (sizes) {
@@ -326,6 +336,7 @@ genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Di
 #' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' Fst(locinfile, outputFile= 'sample.txt.DIV')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   if (sizes) {
@@ -350,7 +361,7 @@ Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataTy
 
 #' @name IBD
 #' @title Isolation by distance
-#' @description Estimates isolation by distance by regression of genetic distance to geographical distance. See \href{../doc/all-menu-options.html#sub-option-5-isolation-by-distance-between-individuals}{this section} of the Genepop executable documentation for more information on indidivual-based analyses and \href{../doc/all-menu-options.html#sub-option-6-isolation-by-distance-between-groups}{this one} for group-based analyses.
+#' @description Estimates isolation by distance by regression of genetic distance to geographical distance. See \href{../doc/all-menu-options.html#sub-option-5-isolation-by-distance-between-individuals}{this section} of the Genepop executable documentation for more information on individual-based analyses and \href{../doc/all-menu-options.html#sub-option-6-isolation-by-distance-between-groups}{this one} for group-based analyses.
 #' @param inputFile The path of the input file, in Genepop format
 #' @param outputFile character: The path of the output file
 #' @param settingsFile character: The path of the settings file
@@ -371,12 +382,14 @@ Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataTy
 #' locinfile <- 'w2.txt'
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' outfile <- ibd(locinfile,'w2.txt.ISO', geographicScale = 'Log', statistic='e')
+#' if ( ! interactive()) clean_workdir(otherfiles='w2.txt')
 #'
 #' infile <- system.file('extdata', 'PEL1600withCoord.txt',package='genepop')
 #' locinfile <- 'PEL1600withCoord.txt'
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' outfile <- ibd(locinfile,'PEL1600withCoord.ISO', statistic = 'SingleGeneDiv',
 #'                geographicScale = '1D')
+#' if ( ! interactive()) clean_workdir(otherfiles='PEL1600withCoord.txt')
 #' }
 ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diploid", statistic = "F/(1-F)", geographicScale = "2D", 
     CIcoverage = 0.95, testPoint = 0, minimalDistance = 1e-04, maximalDistance = 1e+09, mantelPermutations = 1000, mantelRankTest = FALSE, 
@@ -437,6 +450,7 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
 #' locinfile <- 'sample.txt'
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' conversion(locinfile, format='Fstat', 'sample.txt.DAT')
+#' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 conversion <- function(inputFile, format, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   resu <- switch(format, Fstat = REcumenicismFstat(inputFile, outputFile), 
@@ -476,10 +490,11 @@ nulls <- function(inputFile, outputFile = "", settingsFile = "", nullAlleleMetho
 #' @param outputFile character: The path of the output file
 #' @param coordinates Either \code{'population'} (use population coordinates) or anything else (use individual coordinates).
 #' @param verbose logical: whether to print some information
-#' @examples infile <- system.file("extdata", "sample.txt",package="genepop")
+#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
 #' locinfile <- "sample.txt"
 #' check <- file.copy(infile,locinfile,overwrite=TRUE)
 #' outfile <- diploidize(inputFile = locinfile,outputFile="Dsample.txt")
+#' if ( ! interactive()) clean_workdir(c("sample.txt", "Dsample.txt"))
 
 diploidize <- function(inputFile, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
@@ -511,7 +526,41 @@ sample_haploid <- function(inputFile, outputFile = "", verbose = interactive()) 
     .returnInfo(resu, verbose = verbose)
 }
 
-#'@rdname genepop-internals
+#'@rdname genepop-utils
 set_restriction <- function(set=FALSE) {
   invisible(Rset_restriction(set))
+}
+
+#'@rdname clean_workdir
+#' @title Removing files created by Genepop
+#' @description This removes \dQuote{temporary files} created by Genepop, but also output files, so it should be used only when one no longer needs the latter files. This function asumes that the input file name contains only alphanumeric, dot, or underscore characters.  
+#' @param otherfiles Character vector(s): one or more names of files to be removed and not matched by the other arguments (such as the input file, or some output files not identified by their suffix, as shown in the Example).
+#' @param path character vector: path from where files should be removed.
+#' @param suffixes Character vector(s): suffixes of files to be removed (useful for output files with readily identifiable suffixes).
+#' @param in. boolean: whether to remove the \code{fichier.in} file created by Genepop.
+#' @param cmdline boolean: whether to remove the \code{cmdline.txt} file created by Genepop.
+#' @examples # Removing files possibly written by other examples in the documentation:
+#' clean_workdir(otherfiles=c("sample.txt", "Dsample.txt", "w2.txt", 
+#' "PEL1600withCoord.txt", "Rhesus.txt", "structest.txt"))
+clean_workdir <- function(otherfiles=NULL, path=".", suffixes=c("GRA", "ISO", "MIG", "PRI", "DAT", "DG", "DIV", "D", "DIS", "FST", 
+                                                "NUL", "RHO", "2G2", "G", "GE", "GE2", "INF", "MSD", "TAB", "ST2"), 
+                           in.=TRUE, cmdline=TRUE) {
+  oldpath <- setwd(dir = path)
+  filenames <- dir()
+  matchfun <- function(suffix,filenames) {
+    pattern <- paste0("^[a-zA-Z0-9_\\.]*\\.",suffix,"$")
+    grep(pattern,filenames)
+  }
+  if (length(suffixes)) {
+    matches <- sapply(suffixes, matchfun, filenames=filenames)
+    matches <- unlist(matches)
+    if (length(matches)) file.remove(filenames[matches])
+  }
+  if ( ! is.null(otherfiles)) {
+    otherfiles <- otherfiles[which(file.exists(otherfiles))]
+    if (length(otherfiles)) file.remove(otherfiles)
+  }
+  if ( in. && file.exists("fichier.in")) file.remove("fichier.in")
+  if ( cmdline && file.exists("cmdline.txt")) file.remove("cmdline.txt")
+  setwd(oldpath)
 }

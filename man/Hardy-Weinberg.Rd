@@ -6,16 +6,16 @@
 \alias{HWtable_analysis}
 \title{Tests of Hardy-Weinberg genotypic proportions}
 \usage{
-test_HW(inputFile, which = "Proba", outputFile = "", settingsFile = "",
-  enumeration = FALSE, dememorization = 10000, batches = 20,
-  iterations = 5000, verbose = interactive())
+test_HW(inputFile, which = "Proba", outputFile = "",
+  settingsFile = "", enumeration = FALSE, dememorization = 10000,
+  batches = 20, iterations = 5000, verbose = interactive())
 
 HWtable_analysis(inputFile, which = "Proba", settingsFile = "",
   enumeration = FALSE, dememorization = 10000, batches = 20,
   iterations = 5000, verbose = interactive())
 }
 \arguments{
-\item{inputFile}{character: The path of the input file, in Genepop format}
+\item{inputFile}{character: The path of the input file. For \code{test_HW}, this file should be in Genepop format. For \code{HWtable_analysis}, it should be in ad hoc format illustrated by sample file \code{Rhesus.txt} used in the Examples section, and further detailed in \href{../doc/all-menu-options.html#analyzing-a-single-genotypic-matrix}{this section} of the Genepop-executable documentation.}
 
 \item{which}{character: \code{'Proba'}, \code{'excess'}, and \code{'deficit'} to perform the probability test, score test for excess, and score tests for deficit, respectively, in each population and for each locus. \code{test_HW} additionally handles \code{'global excess'} and  \code{'global deficit'} for global tests for all loci and/or all populations, and \code{HWtable_analysis} additionally handles \code{'Fis'} to report basic information (allele frequencies and Fis).}
 
@@ -37,17 +37,19 @@ HWtable_analysis(inputFile, which = "Proba", settingsFile = "",
 The path of the output file is returned invisibly.
 }
 \description{
-Compute variants of the exact conditional test for Hardy-Weinberg genotypic proportions.  The tests differ by their test statistics. \code{HWtable_analysis} handles a single table of genotype counts, and \code{test_HW} requires a standard genepop input file. See \href{../doc/all-menu-options.html#option-1-hardy-weinberg-hw-exact-tests}{this section} of the Genepop executable documentation for more information on the statistical methods.
+Compute variants of the exact conditional test for Hardy-Weinberg genotypic proportions.  The tests differ by their test statistics. \code{HWtable_analysis} handles a single table of genotype counts, and \code{test_HW} requires a standard genepop input file. See \href{../doc/all-menu-options.html#option-1-hardy-weinberg-hw-exact-tests}{this section} of the Genepop-executable documentation for more information on the statistical methods.
 }
 \examples{
 infile <- system.file('extdata', 'sample.txt',package='genepop')
 locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 test_HW(locinfile, which='deficit', 'sample.txt.D')
+if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 # Example in Guo & Thompson 1992 Table 5
 infile <- system.file('extdata', 'Rhesus.txt',package='genepop')
 locinfile <- 'Rhesus.txt'
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 outfile <- HWtable_analysis(locinfile,which='Proba',batches = 1000,iterations = 1000)
 readLines(outfile)[21]
+#clean_workdir(otherfiles='Rhesus.txt')
 }

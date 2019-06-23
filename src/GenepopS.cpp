@@ -33,7 +33,6 @@ data to be ensured and,  more generally, to use and operate it in the
 same conditions as regards security.
 
 The fact that you are presently reading this means that you have had
-#include <Rcpp.h>
 knowledge of the CeCILL license and that you accept its terms.
 
  ***************************************************************************/
@@ -89,7 +88,7 @@ using namespace std;
 //string version=" v4.0 (Built on "+datestring+" at "+timestring+").";
 //string version="4.6";
 std::string getSetting(const std::string which) {
-  const std::string version="4.7.0"; // the O N L Y place to story this info.
+  const std::string version="4.7.2"; // the O N L Y place to story this info.
   if (which.compare("version")==0) return(version);
   if (which.compare("default_settingsfile")==0) return("genepop.txt");
   return("unknown 'which' value");
@@ -118,6 +117,7 @@ unsigned long int alea_seed=67144630; //default value, else through settings
 vector<double>ABCweight;
 double widthCI=0.95;
 string outname; // util dans F_est
+char char_tmp[]=".TMP";
 char char_iso[]=".ISO";
 static char char_mig[]=".MIG";
 static bool first_repl; // apparait dans conversion() dans le cas _perf=true... et dans isolde_etc
@@ -2014,6 +2014,7 @@ o? joue ausi la pond?ration pour le bootstrap
 namespace varForBootstrapGenepop {
     vector<size_t> idxPloid;
    string nom_fich_mig;
+   string nom_fich_tmp;
 }
 
 vector<double> creatMat_isolde(std::vector<double> inputwei) {
@@ -2022,33 +2023,17 @@ vector<double> creatMat_isolde(std::vector<double> inputwei) {
   Then create_matrices and isoldeproc are called.   **/
   using namespace varForBootstrapGenepop;
   using namespace NS_F_est;
+  string nom_fich;
   bool was_first=_first_of_repl; // because the orginal value is needed after it is changed by isoldeproc
   for(size_t loc=0;loc<ABCweight.size();loc++) {ABCweight[loc]=0.;}
   for(size_t loc=0;loc<idxPloid.size();loc++) {ABCweight[idxPloid[loc]]=inputwei[loc];}
   vector<double> tt(3);
   if( _first_of_repl ) {
-    // leave name as is (already "...MIG"). This will be the .MIG file that won't be removed
+    nom_fich= nom_fich_mig;
   } else {
-    // the file is written then immediately used then removed.
-#ifdef _WIN32
-    char* name2=std::tmpnam(NULL); // http://stackoverflow.com/questions/7778889/what-is-the-c-standard-library-equivalent-for-mkstemp
-    ///////RnoR_cerr<< name2<<" ";
-    nom_fich_mig= name2;
-    /// the above is OK for linux except the security warning from clang at linkage
-    /// By contrast, next line is really windoows specific
-    nom_fich_mig=nom_fich_mig.substr(1); // removes an initial backslash
-#else
-    char name2[] = "tmpfileXXXXXX";
-    int id =mkstemp(name2);
-    if (id==-1) {
-      RnoR_cerr << "could not creat temporary file";
-      genepop_exit(-1,"could not creat temporary file");
-    }
-    nom_fich_mig= name2;
-#endif
-    //RnoR_cerr<< nom_fich_mig<<" ";
+    nom_fich= nom_fich_tmp;
   }
-  int indicnodist=create_matrices(nom_fich_mig.c_str()); // this writes a .mig file in all cases
+  int indicnodist=create_matrices(nom_fich.c_str()); // this writes a .mig file in all cases
   if (indicnodist==-1) {
     delete_ptrs(); //deletes houla[][][] ETC;
     noR_cout<<"\nNo coordinates or equal coordinates for all samples;\n";
@@ -2060,9 +2045,9 @@ vector<double> creatMat_isolde(std::vector<double> inputwei) {
     tt[2]=numeric_limits<double>::quiet_NaN();
     return(tt);
   } else {
-    tt=isoldeproc(nom_fich_mig.c_str()); //this reads a .mig file in all cases
+    tt=isoldeproc(nom_fich.c_str()); //this reads a .mig file in all cases
     if( ! was_first ) {
-      remove(nom_fich_mig.c_str());
+      remove(nom_fich.c_str());
     }
   }
   return(tt);
@@ -2135,13 +2120,13 @@ int isolde_etc(bool indiv) {
     CABCbootstrap ABC(multimig::nb_loc_migf);
     _first_of_repl=true;  // set to false in the first call of calcwritecorw()
     if (meanDiffBool) {
-      ABC.bootstrapOverLoci(&mean," for intercept",isolde_file,false);
+      ABC.bootstrapOverLoci(&mean," for INTERCEPT",isolde_file,false);
     } else {
-      ABC.bootstrapOverLoci(&slope," for slope",isolde_file);
+      ABC.bootstrapOverLoci(&slope," for SLOPE",isolde_file);
       /// _first_of_repl can be set to true only once bc when rewrites the output file. But may not be a problem for multiMigFileBool case
       _first_of_repl=true;  // set to false in the first call of calcwritecorw()
       readMultiMigFile(isolde_file.c_str()); // it's better to reset the geo distances...
-      ABC.bootstrapOverLoci(&intercept," for intercept",isolde_file,false);
+      ABC.bootstrapOverLoci(&intercept," for INTERCEPT",isolde_file,false);
     }
 #ifdef COMPATIBILITYRCPP
     // Rcpp::R
@@ -2185,7 +2170,8 @@ int isolde_etc(bool indiv) {
   conversionGeo(); // note that this operates typeSelection on population (habitats) types
   writeGraOnly(isolde_file.c_str());
   isoldeproc(isolde_file.c_str()); //matrices -> regression estimates; calls conversion() for geo dist.
-  if (cmp_nocase(typeSelection,"inter_all_types")!=0) mantelTest(true,mantelRankBool); // calcule Mantel aussi  //FR->FR small feature: in contrast to isolde_etc(), this is called even if there is no information.
+  if (cmp_nocase(typeSelection,"inter_all_types")!=0
+      && cmp_nocase(typeSelection,"intra_all_types")!=0) mantelTest(true,mantelRankBool); // calcule Mantel aussi  //FR->FR small feature: in contrast to isolde_etc(), this is called even if there is no information.
   //delete_ptr_all_repl(); //deletes houla[][][] ETC;  // FR 030111: but set_first_of_repl_ptrs has not been called...
 #ifdef COMPATIBILITYRCPP
   // Rcpp::R
@@ -2207,6 +2193,7 @@ int isolde_etc(bool indiv) {
     ABCweight.resize(nb_locus);
     /** output file names **/
     nom_fich_mig=gp_file;
+    nom_fich_tmp=gp_file+char_tmp;
     nom_fich_CI=nom_fich_mig+char_iso; // whether perf or not;
     //performance output goes is result.CI through boot_result.open("result.CI"); in performance_main();
     nom_fich_mig+=char_mig;
@@ -2214,7 +2201,8 @@ int isolde_etc(bool indiv) {
     /** identify loci with correct ploidy **/
     ploidBool.resize(0);
     idxPloid.resize(0);
-    {   bool boule;
+    {   
+      bool boule;
       size_t idx=0;
       for (vector<char>::iterator ii=fichier_genepop->coding.begin();ii<fichier_genepop->coding.end();ii++,idx++) {
         boule=((estimDiploidBool && (*ii)>3) ||(!estimDiploidBool && (*ii)<4));
@@ -2326,7 +2314,7 @@ int isolde_etc(bool indiv) {
     set_ptrs(); /******************  ! ************************/ // Allocates houla[][][]   etc.
     /** fills per locus tables**/
     genotip2();
-    pairwMS(ploidBool); //calcul MS analyse de variance. la prochaine ?tape est create_matrice
+    pairwMS(ploidBool); //calcul MS analyse de variance. la prochaine etape est create_matrice
     {  // remove LOCUS files created by genotip2 and read by pairwMS (2017/02/17)
       for(size_t jfi=0;jfi<nb_locus;jfi++){
         stringstream stst;
@@ -2370,7 +2358,7 @@ int isolde_etc(bool indiv) {
       ABC.bootstrapOverLoci(&mean_from_creatMat_isolde," for mean",nom_fich_CI,false);
     } else {
       noR_cout<<"Analysis of Isolation by distance\n"; // for general case
-      ABC.bootstrapOverLoci(&slope_from_creatMat_isolde," for slope",nom_fich_CI); // modifies datamatrix::data; using it as scratch!
+      ABC.bootstrapOverLoci(&slope_from_creatMat_isolde," for SLOPE",nom_fich_CI); // modifies datamatrix::data; using it as scratch!
       if (perf) {	 //ecriture des resultats
         _gotoxy(5,9);
         noR_cout<<"Slope= "<<ABC.t0<<" ["<<ABC.tinf<<" , "<<ABC.tsup<<"]       ";  //screen
@@ -2387,9 +2375,11 @@ int isolde_etc(bool indiv) {
         boot_result<<endl;
       } // else non-perf file output made within bootstrapOverLoci
       /** Mantel uses namespace datamatrix hence must be called before bootstrap for intercept**/
-      if ( ! std::isnan(ABC.t0) && cmp_nocase(typeSelection,"inter_all_types")!=0 ) mantelTest(false,mantelRankBool); // calcule Mantel aussi
+      if ( ! std::isnan(ABC.t0) 
+             && cmp_nocase(typeSelection,"inter_all_types")!=0 
+             && cmp_nocase(typeSelection,"intra_all_types")!=0 ) mantelTest(false,mantelRankBool); // calcule Mantel aussi
       /** **/
-      ABC.bootstrapOverLoci(&intercept_from_creatMat_isolde," for intercept",nom_fich_CI,false);
+      ABC.bootstrapOverLoci(&intercept_from_creatMat_isolde," for INTERCEPT",nom_fich_CI,false);
     }
     //_first_of_repl=true;  // set to false in the first call of calcwritecorw()
     delete_ptrs(); //deletes houla[][][] ETC;
@@ -2414,7 +2404,7 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
                                      ofstream& fichier_out) {
 // direct weighing of genotypic counts (not most straightforward but more efficient)
 //    string nom_fic;
-    bool dejavu;
+    bool ABCind_is_new_type;
     double *delta, *dt, *ddt;
     size_t nbInd=popGenos->getSum();
     ssize_t geno; // mismatch sur type map key est fatal
@@ -2451,7 +2441,7 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
     }
     //ATTENTION si RHS a size()=1 LHS est reduit ? size=1
     estimates=estimNullLocPop(iLoc,iPop,false,genocopy,genocopySum,typeMax,fichier_out);
-    t0=estimates[0]; //[1] is historical contingency
+    t0=estimates[0];
 //    _gotoxy(0,8);
 //	cout<<" Computing confidence interval... beginning              ";
     typeMax=fichier_genepop->loci[iLoc]->alleleMax; //! max sur ttes les pops = NULL allele
@@ -2463,28 +2453,35 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
         genocopy.clear();
         popGenos->resetIterator();
         genocumul=0;
-        dejavu=true;
-        for(size_t ind=0;ind<nbInd;ind++) {
-            if (ind>=genocumul) { // individual -> genotype count
-// new geno on indiv ind;
-                genocumul+=popGenos->getEffective((geno=popGenos->getNext()));
-// la perturbation pour CHAQUE ABCind consiste ? reduire le poids de TOUS les inds (sauf un) de
-// w0 = 1/nbInd a 1/nBind - epsn/nbInd donc chaque indiv (sauf un) a poids relatif 1-epsn
-// ca ne sera important qu'en facteur des biduls!
-// teste contre intervalles binomiaux exacts 01/007
-                genocopy[geno]=popGenos->getEffective(geno)*(1.-epsn);
-// if *in addition* new geno on ABCind
-                if (ind==ABCind) dejavu=false;
-            }
-            if (ind==ABCind) genocopy[geno]+=epsn*nbInd;
-        }
-       if (!dejavu) estimates=estimNullLocPop(iLoc,iPop,false,genocopy,genocopySum,typeMax,fichier_out);
-// esle keeps previous estimate
-       tminput[ABCind]=estimates[0];
-//        _gotoxy(0,8);
-//        cout<<" Computing confidence interval... about      % done             ";
-//        _gotoxy(41,8);
-//        cout<< int(100*((double)ABCind+1.0)/(2*(double)nbInd+5.0));
+        ABCind_is_new_type=false; 
+        for(size_t ind=0;ind<nbInd;ind++) { // ind does not refer to the lines in the GP file
+          /*
+           * Suppose we have 10 individual and genotypes in counts 4 3 2 1. We run over 'ind'
+           * and thus 4 times over the first genotyep, 3 over the second... 
+           * We meet a new (geno)type for ind = 0 4 7 9 as tested by (ind>=genocumul)
+           * Then (for each new type: ind = 0 4 7 9) we change its count to getEffective(geno)*(1.-epsn)  
+           * Further (ind==ABCind) is evaluated : 
+           *  * conditionally on ind= 0 4 7 9 and thus ABCind_is_new_type is set to true only for ABCind= 0 4 7 9. 
+           *     Since ABCind 0 1 2 3 have the same genotype by def, there is no need to recompute 'estimates' for _ABCind_ = 1 2 3
+           *     Since ind runs on all values for each ABCind, all genocopy[geno] are reduced in this way.
+           *  * unconditionnally, for all ind and then genocopy[geno] is increased by genocopy[geno]. But this affects estimates 
+           *     only if (ABCind_is_new_type)...
+           *     
+           * Here the weigths are the genotype counts and sum to nbInd they are allready by a *factor* (1.-epsn) 
+           * hence nbInd*epsn must be added on the genotype of the ABCind     
+           */
+            if (ind>=genocumul) { // new geno on indiv ind;  // could test == instead of >= ?
+              genocumul+=popGenos->getEffective((geno=popGenos->getNext()));
+              genocopy[geno]=popGenos->getEffective(geno)*(1.-epsn); // only once for each geno
+              if (ind==ABCind) { 
+                ABCind_is_new_type=true; 
+                genocopy[geno]+=epsn*nbInd; // only once in the ind loop, after genocopy[<geno of ABCind>] has been initialized 
+              } // could test ABCind=genocumul IF first line, before updating genocumul ?
+            } 
+        } // end loop on each ind
+        if (ABCind_is_new_type) estimates=estimNullLocPop(iLoc,iPop,false,genocopy,genocopySum,typeMax,fichier_out); 
+        // elee keeps estimate for previous ABCind
+        tminput[ABCind]=estimates[0];
     }
 
 	//pour borne sup
@@ -2493,28 +2490,24 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
         genocopy.clear();
         popGenos->resetIterator();
         genocumul=0;
-        dejavu=true;
+        ABCind_is_new_type=false;
         for(size_t ind=0;ind<nbInd;ind++) {
             if (ind>=genocumul) { // individual -> genotype count
                 genocumul+=popGenos->getEffective((geno=popGenos->getNext()));
                 genocopy[geno]=popGenos->getEffective(geno)*(1.-epsn);
-                if (ind==ABCind) dejavu=false;
+                if (ind==ABCind) {
+                  ABCind_is_new_type=true;
+                  genocopy[geno]+=epsn*nbInd;
+                }
             }
-            if (ind==ABCind) genocopy[geno]+=epsn*nbInd;
         }
-       if (!dejavu) estimates=estimNullLocPop(iLoc,iPop,false,genocopy,genocopySum,typeMax,fichier_out);
+       if (ABCind_is_new_type) estimates=estimNullLocPop(iLoc,iPop,false,genocopy,genocopySum,typeMax,fichier_out);
        tpinput[ABCind]=estimates[0];
-//        _gotoxy(0,8);
-//        cout<<" Computing confidence interval... about      % done             ";
-//        _gotoxy(41,8);
-//        cout<< int(100*((double)ABCind+1.0)/(2*(double)nbInd+5.0));
     }
-	for(size_t ind=0;ind<nbInd;ind++)
-		{dt[ind]=(tpinput[ind]-tminput[ind])/(2*epsn);
+	for(size_t ind=0;ind<nbInd;ind++) {
+	  dt[ind]=(tpinput[ind]-tminput[ind])/(2*epsn);
 		ddt[ind]=(tpinput[ind]+tminput[ind]-2*t0)/pow(epsn,2);
-//if (iLoc==2 && iPop==1)
-//{cout<<tpinput[ind]-t0<<" "<<tminput[ind]-t0<<" "<<dt[ind]<<" "<<ddt[ind]<<endl;getchar();}
-		}
+	}
 	for(size_t ind=0;ind<nbInd;ind++) {
         sigmahat+=pow(dt[ind],2);
     }
@@ -2543,8 +2536,7 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
     for(size_t ind=0;ind<nbInd;ind++)
         if (ind>=genocumul) { // individual -> genotype count
             genocumul+=popGenos->getEffective((geno=popGenos->getNext()));
-// w0 = 1/nbInd a 1/nBind + delta[ind]*epsn donc chaque indiv a poids relatif 1-epsn*delta*nbInd
-// pas encore important ? ce stade, il ne s'agit toujours que du calcul d'une d?riv?e dans une direction particuli?re
+            // w0 = 1/nbInd a 1/nBind + delta[ind]*epsn donc chaque indiv a poids relatif 1-epsn*delta*nbInd
             genocopy[geno]=popGenos->getEffective(geno)*(1.+delta[ind]*epsn*nbInd);
             genocopySum+=genocopy[geno];
         }
@@ -3613,6 +3605,7 @@ void reinitializeGenepopS() {
   ABCweight.clear();
   widthCI=0.95;
   outname.clear();
+  strcpy(char_tmp, ".TMP");
   strcpy(char_iso, ".ISO");
   strcpy(char_mig, ".MIG");
   first_repl = false;

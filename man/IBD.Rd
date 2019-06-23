@@ -5,9 +5,10 @@
 \alias{ibd}
 \title{Isolation by distance}
 \usage{
-ibd(inputFile, outputFile = "", settingsFile = "", dataType = "Diploid",
-  statistic = "F/(1-F)", geographicScale = "2D", CIcoverage = 0.95,
-  testPoint = 0, minimalDistance = 1e-04, maximalDistance = 1e+09,
+ibd(inputFile, outputFile = "", settingsFile = "",
+  dataType = "Diploid", statistic = "F/(1-F)",
+  geographicScale = "2D", CIcoverage = 0.95, testPoint = 0,
+  minimalDistance = 1e-04, maximalDistance = 1e+09,
   mantelPermutations = 1000, mantelRankTest = FALSE,
   verbose = interactive())
 }
@@ -42,7 +43,7 @@ ibd(inputFile, outputFile = "", settingsFile = "", dataType = "Diploid",
 The path of the output file is returned invisibly.
 }
 \description{
-Estimates isolation by distance by regression of genetic distance to geographical distance. See \href{../doc/all-menu-options.html#sub-option-5-isolation-by-distance-between-individuals}{this section} of the Genepop executable documentation for more information on indidivual-based analyses and \href{../doc/all-menu-options.html#sub-option-6-isolation-by-distance-between-groups}{this one} for group-based analyses.
+Estimates isolation by distance by regression of genetic distance to geographical distance. See \href{../doc/all-menu-options.html#sub-option-5-isolation-by-distance-between-individuals}{this section} of the Genepop executable documentation for more information on individual-based analyses and \href{../doc/all-menu-options.html#sub-option-6-isolation-by-distance-between-groups}{this one} for group-based analyses.
 }
 \examples{
 \dontrun{
@@ -50,11 +51,13 @@ infile <- system.file('extdata', 'w2.txt',package='genepop')
 locinfile <- 'w2.txt'
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 outfile <- ibd(locinfile,'w2.txt.ISO', geographicScale = 'Log', statistic='e')
+if ( ! interactive()) clean_workdir(otherfiles='w2.txt')
 
 infile <- system.file('extdata', 'PEL1600withCoord.txt',package='genepop')
 locinfile <- 'PEL1600withCoord.txt'
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 outfile <- ibd(locinfile,'PEL1600withCoord.ISO', statistic = 'SingleGeneDiv',
                geographicScale = '1D')
+if ( ! interactive()) clean_workdir(otherfiles='PEL1600withCoord.txt')
 }
 }

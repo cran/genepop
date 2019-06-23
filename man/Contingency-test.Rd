@@ -5,8 +5,8 @@
 \alias{struc}
 \title{Exact test on a single contingency table}
 \usage{
-struc(inputFile, settingsFile = "", dememorization = 10000, batches = 100,
-  iterations = 5000, verbose = interactive())
+struc(inputFile, settingsFile = "", dememorization = 10000,
+  batches = 100, iterations = 5000, verbose = interactive())
 }
 \arguments{
 \item{inputFile}{character: The path of the input file. This file should be in an ad hoc format}
@@ -32,4 +32,5 @@ infile <- system.file('extdata', 'structest.txt',package='genepop')
 locinfile <- 'structest.txt'
 check <- file.copy(infile,locinfile,overwrite=TRUE)
 struc(locinfile)
+if ( ! interactive()) clean_workdir(otherfiles='structest.txt')
 }

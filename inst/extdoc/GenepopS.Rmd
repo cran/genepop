@@ -70,7 +70,7 @@ The Mantel test based on regression slope (not the one on ranks) was not handlin
 
 **Version 4.5**
 
-A new keyword `inter_all_pairs` for setting "popTypeSelection" allows one to perform spatial regressions (but not Mantel tests) between all pairs of individuals or populations belonging to different types (e.g., individuals belonging to different patches, excluding pairwise statistics for pairs of individuals within patches).
+A new keyword `inter_all_types` for setting "popTypeSelection" allows one to perform spatial regressions (but not Mantel tests) between all pairs of individuals or populations belonging to different types (e.g., individuals belonging to different patches, excluding pairwise statistics for pairs of individuals within patches).
 
 **Version 4.4**
 
@@ -750,7 +750,7 @@ The settings `PopTypes` and `PopTypeSelection` have been developed to facilitate
 
 `PopTypes` allows to distinguish different types of samples (e.g. different ecotypes) by integer indices. The number of indices must match the number of samples in the data file.
 
-`PopTypeSelection` allows performing analyses (genetic distance regressions, confidence intervals, Mantel tests) only on pairs of populations belonging to the types specified. That is, the genetic differentiation statistic among excluded pairs is not used in any of these analyses. The different choices are shown above: `all` excludes no pairs (this is the default value); `inter` $a$ $b$ will exclude all pairs that do not involve both types $a$ and $b$ (only two types can be specified); and `only` $a$ will exclude all pairs that involve a type different from $a$ (only one type can be specified). For the latter two choices, permutations are made only among samples from a given type. `inter_all_pairs` excludes all pairs within types; no Mantel test is performed in that case.
+`PopTypeSelection` allows performing analyses (genetic distance regressions, confidence intervals, Mantel tests) only on pairs of populations belonging to the types specified. That is, the genetic differentiation statistic among excluded pairs is not used in any of these analyses. The different choices are shown above: `all` excludes no pairs (this is the default value); `inter` $a$ $b$ will exclude all pairs that do not involve both types $a$ and $b$ (only two types can be specified); and `only` $a$ will exclude all pairs that involve a type different from $a$ (only one type can be specified). For the latter two choices, permutations are made only among samples from a given type. `inter_all_types` excludes all pairs within types; no Mantel test is performed in that case.
 
 You have to perform the "`only`" and "`inter`" analyses in distinct Genepop runs if you wish to compare their results. @Rousset99g explains how inferences can be made from such comparisons. Note that in this perspective, some comparison of the intercept may be useful and that Genepop also provides confidence intervals on the intercept at zero distance [or log(distance)].
 
@@ -816,7 +816,7 @@ The following menu appears[^21]
 Evaluating the performance of inferences for Isolation by distance
 ==================================================================
 
-Genepop can analyze multiple files, using the settings settings
+Genepop can analyze multiple files, using the settings settings
 
      GenepopRootFile=file                   <-- or GenepopRootFileName...
      JobMin=1
@@ -825,7 +825,7 @@ Genepop can analyze multiple files, using the settings settings
  \index{GenepopRootFile setting}
  \index{JobMin}
  \index{JobMax}
-This will perform analysis of data in files `file`1 to `file`100. Default values of these three settings are `GP`, 1, and 1. Users need to assemble results from the multiple output files. A more integrated output is provided for analyses of isolation by distance. For the regression estimators of $D\sigma^2$ (menu options 6.5 and 6.6), the `result.CI` file will contain a Table of point estimates, bootstrap confidence intervals, and (if requested using the `testPoint` setting) the bootstrap P-value for a given tested neighborhood value. including the performance of the bootstrap confidence intervals.
+This will perform analysis of data in files `file`1 to `file`100. Default values of these three settings are `GP`, 1, and 1. Users need to assemble results from the multiple output files. A more integrated output is provided for analyses of isolation by distance. For the regression estimators of $D\sigma^2$ (menu options 6.5 and 6.6), the `result.CI` file will contain a table of point estimates, bootstrap confidence intervals, and (if requested using the `testPoint` setting) the bootstrap P-value for a given tested neighborhood value. including the performance of the bootstrap confidence intervals.
 
 The `Performance=`*value* setting\index{Performance setting} provides a convenient (if somewhat ad hoc) shortcut for selecting the following analyses:
 

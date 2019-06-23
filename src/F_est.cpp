@@ -50,6 +50,9 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <errno.h>
 #ifdef COMPATIBILITYRCPP
 #include <Rcpp.h>
+// [[Rcpp::depends(RcppProgress)]]
+#include <progress.hpp>
+#include <progress_bar.hpp>
 #endif
 
 
@@ -157,7 +160,7 @@ using namespace NS_F_est;
     map<int,int>::iterator ptr;
     // taille is a map<int,int> hence .find(key_type=int)
     if (taille.size()<=F_est_locIt || (ptr=taille[F_est_locIt].find(int(type)))==taille[F_est_locIt].end())
-       return int(type); // taille=type si element pas trouv� dans la map type->taille
+       return int(type); // taille=type si element pas trouve dans la map type->taille
                     // (avec l'avantage que 0 renvoit 0: cf option 5.3 en haploide)
     else
        return ptr->second;
@@ -195,10 +198,10 @@ using namespace NS_F_est;
 		houla=new double**[nb_locus];
 	//	houla.resize(nb_locus+1);
 		for(size_t locit=0;locit<nb_locus; locit++) {
-	// popi va de 1 � nb_sam-1 maxi	=> nbsam-1 values
+	// popi va de 1 e nb_sam-1 maxi	=> nbsam-1 values
 	//		houla[locit].resize(nb_sam);
 			houla[locit]=new double*[nb_sam-1];
-	// popj va de 2 � nb_sam=>nb_sam-1 values
+	// popj va de 2 e nb_sam=>nb_sam-1 values
 			for(size_t iit=0;iit<nb_sam-1; iit++) {//houla[locit][iit].resize(nb_sam+1);
 				houla[locit][iit]=new double[nb_sam-1];
 			}
@@ -246,16 +249,16 @@ return 0;
 }
 
 int genotip2() { //as of 28/03/2007 this is only called by isolde_etc()
-// cr�e des fichiers pour tous les locis, haploides et diploides
+// cree des fichiers pour tous les locis, haploides et diploides
 //voir genotip2new() dans CT_tests.cpp   !!! -- n'existe pas. struc(...), peut etre ?
-//ecriture tous genotypes pour diff�rentes pop et un locus dans fichier LOCUSx
+//ecriture tous genotypes pour differentes pop et un locus dans fichier LOCUSx
 using namespace NS_F_est;
 	vector<vector<int> >typestip2(2);
 	vector<unsigned long int>dummyvec;
-    vector<CPopulation *>::iterator p; // it�rateur sur les populations
-	CGenotypes *allGenotypes; // TOUS les g�notypes du locus courant dans le fichier
-	vector<CGenotypes *>genopops; // g�notypes pour chaque population au locus courant
-	vector<CGenotypes *>::iterator pG; // it�rateur sur les g�notypes
+    vector<CPopulation *>::iterator p; // iterateur sur les populations
+	CGenotypes *allGenotypes; // TOUS les genotypes du locus courant dans le fichier
+	vector<CGenotypes *>genopops; // genotypes pour chaque population au locus courant
+	vector<CGenotypes *>::iterator pG; // iterateur sur les genotypes
 	string fileName; // LOCUS%d
 	string line;
 	char coding;
@@ -264,7 +267,7 @@ using namespace NS_F_est;
 	ssize_t genotype;
   unsigned long int ligmarg=0;
 
-	// instanciation des structures de stockage des g�notypes
+	// instanciation des structures de stockage des genotypes
 	allGenotypes = new CGenotypes;
 	genopops.resize(fichier_genepop->pops.size());
 
@@ -272,32 +275,32 @@ using namespace NS_F_est;
 	for (F_est_locIt = 0; F_est_locIt < fichier_genepop->loci.size(); F_est_locIt ++) {
         coding=fichier_genepop->coding[F_est_locIt];
         allelecoding=2+std::max(coding/2,coding%4);   // 2 3 4 6 => 4 5 4 5
-		// purge de la structure de g�notypes globale
+		// purge de la structure de genotypes globale
 		allGenotypes->clear();
-		// it�rations sur les populations pour le locus courant
-		pG = genopops.begin(); // initialisation de l'it�rateur sur les populations
+		// iterations sur les populations pour le locus courant
+		pG = genopops.begin(); // initialisation de l'iterateur sur les populations
 		for(p = fichier_genepop->pops.begin(); p != fichier_genepop->pops.end(); p++) {
-			allGenotypes->fillGenotypes(F_est_locIt, *p,coding); // remplissage de la structure de g�notypes globale
-			(*pG) = new CGenotypes; // instanciation de la structure de stockage de g�notypes de la pop courante pour le locus courant
+			allGenotypes->fillGenotypes(F_est_locIt, *p,coding); // remplissage de la structure de genotypes globale
+			(*pG) = new CGenotypes; // instanciation de la structure de stockage de genotypes de la pop courante pour le locus courant
 			(*pG)->clear(); // nettoyage
 			(*pG)->fillGenotypes(F_est_locIt, *p,coding);
 			pG++;
 		}
 
-		// cr�ation et ouverture du fichier de sortie pour le locus courant
+		// creation et ouverture du fichier de sortie pour le locus courant
 		{
 		  std::stringstream stst;
 		  stst<<"LOCUS"<<F_est_locIt+1;
 		  fileName = stst.str();
 		}
 		ofstream fichier_out(fileName.c_str(), ios::out);
-		// �critures, l'horreur de reproduire les sorties basic
+		// ecritures, l'horreur de reproduire les sorties basic
 		fichier_out << "From file " << fichier_genepop->fileName <<"  (Locus: " << fichier_genepop->loci[F_est_locIt]->locusName << ")" << endl;
 		if (coding>3) { // ie diploid data
       /// first the table that is to be read by Genepop
       // number of pops and number of genotypes
 		  fichier_out << setw(4) << fichier_genepop->pops.size() << " " << setw(3) << allGenotypes->getNumber() << " " << endl;
-		  fichier_out.setf(ios_base::left,ios_base::adjustfield); // calage � gauche
+		  fichier_out.setf(ios_base::left,ios_base::adjustfield); // calage e gauche
 		  // a contingency table: loop over pops, row = vector of genotype counts
 		  for(pG = genopops.begin(); pG != genopops.end(); pG++) {
 		    dummyvec.resize(0);
@@ -307,7 +310,7 @@ using namespace NS_F_est;
 		  }
 		} else { // haploid data
 		  fichier_out << setw(4) << fichier_genepop->pops.size() << " " << setw(3) << fichier_genepop->loci[F_est_locIt]->getNumber() << " " << endl;
-		  fichier_out.setf(ios_base::left,ios_base::adjustfield); // calage � gauche
+		  fichier_out.setf(ios_base::left,ios_base::adjustfield); // calage e gauche
 		  for(vector<CPopulation *>::iterator ii=fichier_genepop->pops.begin();ii<fichier_genepop->pops.end();ii++) {
 		    dummyvec.resize(0);
 		    fichier_genepop->loci[F_est_locIt]->resetIterator();
@@ -319,7 +322,7 @@ using namespace NS_F_est;
 		    fichier_out<<endl;
 		  }
 		}
-		// la suite est un formatage propre pour lecture humaine. Simplifi� � partir de crunchloclable
+		// la suite est un formatage propre pour lecture humaine. Simplifie e partir de crunchloclable
 		fichier_out << endl;
 		fichier_out << "          Genotypes:" << endl;
 		fichier_out << "          ";
@@ -345,7 +348,7 @@ using namespace NS_F_est;
             enligne(dummyvec,fichier_out,allelecoding);
         }
 		fichier_out << "   All\n----" << endl;
-    	if (coding>3) { // donn�es diploides
+    	if (coding>3) { // donnees diploides
           	pG = genopops.begin();
             for(vector<CPopulation *>::iterator ii=fichier_genepop->pops.begin();ii<fichier_genepop->pops.end();ii++) {
                 fichier_out << setw(10) << (*ii)->popName().substr(0,9);   //FER
@@ -373,7 +376,7 @@ using namespace NS_F_est;
             }
             enligne(dummyvec,fichier_out,allelecoding);
             fichier_out<<"   "<<ligmarg<<endl;
-        } else { //donn�es haploides
+        } else { //donnees haploides
             for(vector<CPopulation *>::iterator ii=fichier_genepop->pops.begin();ii<fichier_genepop->pops.end();ii++) {
                 fichier_out << setw(10) << (*ii)->popName().substr(0,9);   //FER
                 dummyvec.resize(0);
@@ -422,7 +425,7 @@ using namespace NS_F_est;
 
 
 void lecture_floc(){
-//lecture des fichiers LOCUSn cr��s par genotip2 (PAS l'option 5: voir tabFtoTabM)
+//lecture des fichiers LOCUSn crees par genotip2 (PAS l'option 5: voir tabFtoTabM)
 // loci diploides ou haploides
 using namespace NS_F_est;
    string d,dummy_s;
@@ -459,7 +462,7 @@ size_t nb_sam_lu;
 
       tabCode=new size_t*[global_geno_nbr];
       for(size_t g = 0; g < global_geno_nbr; g++) tabCode[g]=new size_t[2];
-      // lecture � partir ligne 3 du fichier : effectif genotypiques (ou alleliques...) par pop
+      // lecture e partir ligne 3 du fichier : effectif genotypiques (ou alleliques...) par pop
       for(size_t pop = 0; pop < nb_sam_lu; pop++){
          for(size_t g = 0; g < global_geno_nbr; g++){
             flocusIn>>tabM[pop][g];
@@ -468,14 +471,14 @@ size_t nb_sam_lu;
       } // next pop
       flocusIn>>dummy_s; // passe sur "genotypes:"
       flocusIn>>dummy_s; // passe sur "----------"
-      for(size_t g = 0; g < global_geno_nbr; g++){ //sert dans calc_sfreqs;Nc(), m�me en haplo
-         flocusIn>>tabCode[g][0]; // lit num�ro 1e allele du g�notype
+      for(size_t g = 0; g < global_geno_nbr; g++){ //sert dans calc_sfreqs;Nc(), meme en haplo
+         flocusIn>>tabCode[g][0]; // lit numero 1e allele du genotype
 //cout<<tabCode[g][0];getchar();
       } // next j
       if (fichier_genepop->coding[F_est_locIt]>3) { // si le locus est diploide
           flocusIn>>dummy_s; // passe sur "pop:"
           for(size_t g = 0; g < global_geno_nbr; g++){
-             flocusIn>>tabCode[g][1]; // lit num�ro 2e allele du g�notype
+             flocusIn>>tabCode[g][1]; // lit numero 2e allele du genotype
           } // next g
       } else for(size_t g = 0; g < global_geno_nbr; g++){
              // pas vrai par defaut!
@@ -503,18 +506,18 @@ using namespace NS_F_est;
 
       tabCode=new size_t*[global_geno_nbr];
       for(size_t g = 0; g < global_geno_nbr; g++) tabCode[g]=new size_t[2];
-      // lecture � partir ligne 3 du fichier : effectif genotypiques par pop
+      // lecture e partir ligne 3 du fichier : effectif genotypiques par pop
       for(size_t pop = 0; pop < nb_sam; pop++){
          for(size_t g = 0; g < global_geno_nbr; g++){
             tabM[pop][g]=(*tabF)[pop][g];
          } // next g
       } // next pop
       for(size_t g = 0; g < global_geno_nbr; g++){
-         tabCode[g][0]=(*tabF)[nb_sam][g]; // lit num�ro 1e allele du g�notype
+         tabCode[g][0]=(*tabF)[nb_sam][g]; // lit numero 1e allele du genotype
       } // next j
       for(size_t g = 0; g < global_geno_nbr; g++){
-// pour option5.2, 5.3 m�me haploide (*tabF)[nb_sam+1] existe (cf crunchLocTable)
-         tabCode[g][1]=(*tabF)[nb_sam+1][g]; // lit num�ro 2e allele du g�notype
+// pour option5.2, 5.3 meme haploide (*tabF)[nb_sam+1] existe (cf crunchLocTable)
+         tabCode[g][1]=(*tabF)[nb_sam+1][g]; // lit numero 2e allele du genotype
       } // next g
    } // si n ou m
 } // fin lecture
@@ -783,17 +786,17 @@ using namespace NS_tailles;
     } else {deuxsamp=nb_sam;}
 //cerr<<global_pop_it<<" "<<global_pop2_it<<" "<<deuxsamp<<endl;
 
-// ATTENTION les tabcodes sont les noms d'alleles et donc l'iterateur est born� par le nom max,
-//pas par le nombre max d'alleles (et sferqs dimensionn� en cons�quence � maxallname+1)
+// ATTENTION les tabcodes sont les noms d'alleles et donc l'iterateur est borne par le nom max,
+//pas par le nombre max d'alleles (et sferqs dimensionne en consequence e maxallname+1)
 
     Ntot=0;	
     double Ntot2=0;
     scgsp.resize(deuxsamp);
 	for (size_t i=0;i<deuxsamp;i++) {
 		 scgsp[i]=0; //effectif sample [i]...
-//evid le code suivant plante si tabM n'a pas ete allou� quand global_geno_nbr=0
+//evid le code suivant plante si tabM n'a pas ete alloue quand global_geno_nbr=0
 		 if (global_geno_nbr>0) {
-		 	if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donn�e
+		 	if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donnee
 		 	else tabMind=tabM[i];
 		 } // else the following loop does nothing
 		 for (size_t j=0;j<global_geno_nbr;j++) {
@@ -802,7 +805,7 @@ using namespace NS_tailles;
 			  scgsp[i]+=tabMindj;
 			  /*Fst:*/
 			  if (identity) {
-//sfreqs a �t� r�init � 0 juste avant chaque appel de calc_sfreqs_Nc() dans lecturePaires()
+//sfreqs a ete reinit e 0 juste avant chaque appel de calc_sfreqs_Nc() dans lecturePaires()
 //cout<<indices[i]<<" "<<j<<" "<<tabM[indices[i]][j];getchar();
 //cout<<"ident=true! !!";getchar();
             	  		sfreqs[i][tabCode[j][0]]+=tabMindj; //2 lignes de rajouts d'effectifs alleliq pour chaque geno dans chaque pop
@@ -823,7 +826,7 @@ using namespace NS_tailles;
 //if (deuxsamp!=2) cerr<<"("<<j<<" "<<tabCode[j][0]<<" "<<tabCode[j][1]<<" "<<(tabMind)[j]<<")";
 		 } /*j*/
 		 if (scgsp[i]>0) nonvides++;
-		 Ntot+=scgsp[i]; //n1+n2 //FER vir� (+)1.0*(scgsp[i]) bizarre int-> double -> int. Idem ci dessous
+		 Ntot+=scgsp[i]; //n1+n2 //FER vire (+)1.0*(scgsp[i]) bizarre int-> double -> int. Idem ci dessous
 		 Ntot2+=scgsp[i]*scgsp[i]; //
 	} /*i*/
 //cerr<<"c";
@@ -868,11 +871,11 @@ using namespace NS_tailles;
 void calculSSetMS(std::vector<double>& tailleMoy,
                   vector<unsigned long int>& scgsp,
                   vector<vector<double> >& sfreqs,
-                  size_t& Ntot) {    /* calcul SSp et MSp; appel� une fois par locus */
+                  size_t& Ntot) {    /* calcul SSp et MSp; appele une fois par locus */
 // here from hierFstat (options 6.1--6.4) or from isolde_etc()
 /* Noter les sommes explicites sur les alleles [ii=1;ii<=maxallname;ii++]
-si on ne prend qu'un terme de la somme on arrive finalement � un Fst par l'allele donn�.
-Expressions semblables � celles de Weir, GDA2, p.185.
+si on ne prend qu'un terme de la somme on arrive finalement e un Fst par l'allele donne.
+Expressions semblables e celles de Weir, GDA2, p.185.
 */
 // les indices[] ont ete valu'es dans calc_sfreqs_Nc
 using namespace NS_F_est;
@@ -908,7 +911,7 @@ using namespace NS_tailles;
 	 SSi=0.;
 	 if (!identity) {	 /*rho:*/
 		  for (size_t i=0;i<deuxsamp;i++) {
-                if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donn�e
+                if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donnee
                 else tabMind=tabM[i];
 				for (size_t j=0;j<global_geno_nbr;j++) {
         		    if (tabCode[0][1]>0) {//diploidy
@@ -926,8 +929,8 @@ using namespace NS_tailles;
 	 else { /*Fst:*/
 		  for (size_t i=0;i<deuxsamp;i++) {
 				for (size_t ii=1;ii<=maxallname;ii++) {
-//sommes sur les individus. la sommation est d�j� op�r�e dan les formules de WeirC84,
-// d'o� leur terme suppl�mentaire
+//sommes sur les individus. la sommation est deje operee dan les formules de WeirC84,
+// d'oe leur terme supplementaire
         		  if (tabCode[0][1]>0) //diploidy
 					 SSi=SSi+2.0*scgsp[i]*(sfreqs[i][ii]-pow(sfreqs[i][ii],2)
 											  -sfreqs[deuxsamp+1][ii]/4);
@@ -946,7 +949,7 @@ du ST global dans mat_ST grace au test Nc>1.0001 */
 	 if (tabCode[0][1]>0) {// i.e. not haploid; si haploid SSg reste nul
     	 if (!identity) {	 /*rho:*/
     		  for (size_t i=0;i<deuxsamp;i++) {
-                 if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donn�e
+                 if (indic12all==1 ||indic12all==2) tabMind=tabM[indices[i]]; // pointe sur le vecteur des effectifs genos pour la pop donnee
                  else tabMind=tabM[i];
     			 for (size_t j=0;j<global_geno_nbr;j++) {
                     moy= (tailleOfType(tabCode[j][0])+tailleOfType(tabCode[j][1]))/2.;
@@ -967,7 +970,7 @@ du ST global dans mat_ST grace au test Nc>1.0001 */
     	 } /* identity */
      }
 //if (deuxsamp!=2) {cerr<<"SSg "<<SSg;getchar();}
-	 if (Ntot==0) MSg=0.; else MSg=SSg/Ntot; // test chang� de Nc � Ntot 21/10/2006
+	 if (Ntot==0) MSg=0.; else MSg=SSg/Ntot; // test change de Nc e Ntot 21/10/2006
 /*if (MSg*(1-MSg)*(0.5-MSg)>0.001) {
 cout<<endl<< global_pop_it<<" "<<global_pop2_it<<endl;
 for (size_t j=0;j<global_geno_nbr;j++) {cout<<" "<<tabCode[j][0]<<" "<<tabCode[j][1]<<endl;}
@@ -1071,13 +1074,18 @@ int main2x2(vector<bool>& ploidBool) { //called only in main2x2 hence in isolde_
 using namespace NS_F_est;
 using namespace NS_GP;
    if (!_perf) effacer_ecran();
+#ifdef COMPATIBILITYRCPP
+   Rcpp::Rcerr<<"Computing pairwise Fst's or analogous correlations:"<<endl;
+   Progress progbar(nb_locus, true);
+#else   
    _gotoxy(0,5);
-        noR_cout<<" Computing pairwise Fst's or analogous correlations";
-/* RHO */
-//if (!identity) {cout<<"!identity pas implement�";getchar();} //lectureTaille();
+   noR_cout<<" Computing pairwise Fst's or analogous correlations";
+   /* RHO */
+   //if (!identity) {cout<<"!identity pas implemente";getchar();} //lectureTaille();
    _gotoxy(19,6);
-
-        noR_cout<<"Already            loci considered, out of "<<nb_locus;
+   
+   noR_cout<<"Already            loci considered, out of "<<nb_locus;
+#endif
 
 
 for (F_est_locIt=0;F_est_locIt<nb_locus;F_est_locIt++) {
@@ -1087,7 +1095,7 @@ for (F_est_locIt=0;F_est_locIt<nb_locus;F_est_locIt++) {
 	if(ploidBool[F_est_locIt]) {
          lecture_floc(); //reads LOCUSn files
     }
-	if (global_geno_nbr>1) { // s'il a trouv� des genos dans LOCUSn
+	if (global_geno_nbr>1) { // s'il a trouve des genos dans LOCUSn
 	  deuxsamp=2; //global variable: info for lecturePaires-> (calc_sfreqs_Nc and calculSSetMS)
 		lecturePaires();// calcule les MS de l'analyse de variance
 	} else {
@@ -1107,14 +1115,16 @@ for (F_est_locIt=0;F_est_locIt<nb_locus;F_est_locIt++) {
 #endif
 
 	 } /*if global_geno_nbr>1*/
-		 _gotoxy(31,6);
+#ifdef COMPATIBILITYRCPP
+	progbar.increment();
+#else   
+	_gotoxy(31,6);
+	noR_cout<<human_loc_it<<"  ";
+#endif
 
-            noR_cout<<human_loc_it<<"  ";
-
-
-// libere les allocations effectu�es dans lecture_floc
+// libere les allocations effectuees dans lecture_floc
       if(nb_sam == 0 || global_geno_nbr == 0){
-// *meme test que dans lecture_floc* sauf si diff�rence entre nb_sam et nb_sam_lu....
+// *meme test que dans lecture_floc* sauf si difference entre nb_sam et nb_sam_lu....
       }else{
           for(size_t pop = 0; pop < nb_sam; pop++) delete[] tabM[pop];
           delete[] tabM;
@@ -1282,8 +1292,8 @@ double truncated;
         for (size_t s2=0; s2<s1; s2++)
             if (isnan(m[s2][s1])) opt<<"     -    ";
             else {
-//"C++ never truncates data"... donc il va syst�matiquement sortir 6 chiffres signif
-//m�me s'il commence � 0.00... et �a va d�passer la width()
+//"C++ never truncates data"... donc il va systematiquement sortir 6 chiffres signif
+//meme s'il commence e 0.00... et ea va depasser la width()
                 truncated=double(floor(m[s2][s1]*1000000.)/1000000.);
 // rounding by int(.+0.5) does ugly things with negative numbers
     	        opt<<" ";opt.width(9);opt<<truncated;
@@ -1337,15 +1347,15 @@ using namespace NS_F_est;
 	pma<<nb_sam_migf<<endl;
 	for (size_t s1=0; s1<nb_sam_migf; s1++) {
 		tabmin=std::min(tabmin,*min_element(data[s1].begin(),data[s1].end()));
-	} // tabmin finit n�gatif sinon 0
+	} // tabmin finit negatif sinon 0
 	for (size_t s1=0; s1<nb_sam_migf; s1++) {
 	 pma.setf(ios_base::left,ios_base::adjustfield);
 	 pma.width(11); //"The species name is ten characters long, and must be padded out with blanks if shorter."
 	 pma<<(fichier_genepop->pops[s1]->popName()).substr(0,10);
 	 pma.setf(ios_base::right,ios_base::adjustfield);
 	 for (size_t s2=0; s2<nb_sam_migf; s2++) {
-	//"C++ never truncates data"... donc il va syst�matiquement sortir 6 chiffres signif
-	//m�me s'il commence � 0.00... et �a va d�passer la width()
+	//"C++ never truncates data"... donc il va systematiquement sortir 6 chiffres signif
+	//meme s'il commence e 0.00... et ea va depasser la width()
 		if (s1==s2) truncated=0.0;
 		else {
 			if (s1>s2) truncated=data[s2][s1]; else truncated=data[s1][s2];
@@ -1407,8 +1417,9 @@ bool includedfn(size_t s1,size_t s2) {// function to exclude pairs from regressi
         if ((poptypes[s1]==typeindex1 && poptypes[s2]==typeindex2)) return(true);
         if ((poptypes[s2]==typeindex1 && poptypes[s1]==typeindex2)) return(true);
     } else if(cmp_nocase(typeSelection,"inter_all_types")==0) {
-            noR_cout<<".";
-        return(poptypes[s1]!=poptypes[s2]);
+      return(poptypes[s1]!=poptypes[s2]);
+    } else if(cmp_nocase(typeSelection,"intra_all_types")==0) {
+      return(poptypes[s1]==poptypes[s2]);
     }
     // poids nul si on arrive ici:
     return(false);
@@ -1434,7 +1445,7 @@ void conversionGeo() {
     cin.ignore();
     if (ch=='D' || ch=='d') _logdist="identity"; else _logdist="log";
   }
-  for (size_t s1=0; s1<nb_sam_migf; s1++)
+  for (size_t s1=0; s1<nb_sam_migf; s1++) {
     for (size_t s2=0; s2<s1; s2++)  {
       if ( ! includedfn(s1,s2)) // tests for inclusion of data
         data[s1][s2]= numeric_limits<double>::quiet_NaN();
@@ -1456,13 +1467,14 @@ void conversionGeo() {
         }
       }
     }
-    if ((_first_of_repl) &&(indic_lognan)) {
-      noR_cout<<"\n had geographic distance <= 0.";
-      noR_cout<<"\n The ln(distance) will appears as '-' in these (row,column) positions";
-      noR_cout<<"\n in the output matrix.";
-      if (pauseGP) { noR_cout<<"\n(Return) to continue"<<endl; getchar();}
-    }
-    //cout<<"end conversionGeo";getchar();
+  }
+  if ((_first_of_repl) &&(indic_lognan)) {
+    noR_cout<<"\n had geographic distance <= 0.";
+    noR_cout<<"\n The ln(distance) will appears as '-' in these (row,column) positions";
+    noR_cout<<"\n in the output matrix.";
+    if (pauseGP) { noR_cout<<"\n(Return) to continue"<<endl; getchar();}
+  }
+  //cout<<"end conversionGeo";getchar();
 } /* end, conversionGeo */
 
 
@@ -1641,7 +1653,7 @@ int create_matrices(const char nom_fich_mig[]) {
 //cout<<"debut create_matrices";getchar();
 //equivalent de malecot.exe
 /* Pour e_r (Loiselle) les expressions sont justifies par un calcul manuscrit que j'ai
-photocopi� dans un maximum d'endroits...*/
+photocopie dans un maximum d'endroits...*/
   using namespace NS_F_est;
   ofstream f_mig;
   f_mig.open(nom_fich_mig,ios::out);
@@ -1715,7 +1727,7 @@ MS_for_isolde();//calcul MSG de la pop pour chaque locus
 //	cout<<"\r Creating matrices for population "<<popj;
         for(popi=1;popi<popj;popi++) {
             if ((_e_stat) && (_first_of_repl)) lecture_Xi_Xj_pmoy();//calcul (Xi+Xj)pmoy$
-            lecture_popi_popj();//calcul les MS (pond�r�es pour ABCboot) pour la paire i_j
+            lecture_popi_popj();//calcul les MS (ponderees pour ABCboot) pour la paire i_j
             ecriture_pop_tot(f_mig); // writes to f_mig
         }//fin popi
         f_mig<<endl;
@@ -1735,7 +1747,7 @@ MS_for_isolde();//calcul MSG de la pop pour chaque locus
 	}
 #endif
 
-    f_mig<<"distances:"<<endl; //FER \n rajout� le 11/05/06
+    f_mig<<"distances:"<<endl; //FER \n rajoute le 11/05/06
     if( f_mig.is_open()) {
       f_mig.close();
     } //else RnoR_cerr<<"!"; // FIXME
@@ -1880,7 +1892,7 @@ void mantelTest(bool clearscreen, bool rankBool) { // no declaration defaults fo
 using namespace datamatrix;
 using namespace NS_F_est;
 //Mantel test
-  size_t s1, s2, t, k, z;
+  size_t s1, s2, t, k, z, lo, up;
   MTRand aleam;
   vector<vector<long double> >selecteddata;
   long np;
@@ -2034,62 +2046,67 @@ So there is no motive for defining more complex selection procedures
 		for(t=0;t<nb_sam_sel;t++){p[t]=t;}
 //ostream_vector(selectedpops1,cout);getchar();
 		for(np=0;np<mantelPerms;np++){
-		    if(cmp_nocase(typeSelection,"inter")==0) {// even for 'inter', permutation of type 1 samples is enough
-               size_t locint=selectedpops1.size();
-			   for(t=0;t<locint-1;t++){
-                 k=aleam.randInt(locint-t-1)+t; //dans t+[0,locint-t-1] = [t,locint[
-//cout<<t<<" "<<k<<" "<<selectedpops1[t]<<" "<<selectedpops1[k]<<endl;
-			     z=p[selectedpops1[k]];p[selectedpops1[k]]=p[selectedpops1[t]];p[selectedpops1[t]]=z;
-			     //note that p may refer to two selected types of pops but still only type 1 positions are permuted
-//ostream_vector(p,cout);getchar();
-               }
-            } else { // "all" or "only": permutation of all elements of p
-			   for(t=0;t<nb_sam_sel-1;t++){
-                 k=aleam.randInt(nb_sam_sel-t-1)+t; //dans t+[0,nb_sam_sel-t-1] = [t,nb_sam_sel[
-			     z=p[k];p[k]=p[t];p[t]=z;
-               }
-            }
-        	ssd=0.0;
-
-            if (needmarginals) {
-                sumx=0.;
-                sumy=0.;
-                sumx2=0.0;
-                npairs=0;
-
-                for (s1=0; s1<nb_sam_sel-1; s1++)
-                    for (s2=s1+1; s2<nb_sam_sel; s2++) {
-                        if (!isnan((*matfortestnan)[s1][s2])) { //(full y) there is genetic info (!isnan) and the pair is not excluded by poptypeselection => is in matfortestnan
-                            x = (p[s2]>p[s1]? idistmat[p[s1]][p[s2]]:idistmat[p[s2]][p[s1]]);
-                            y = idistmat[s2][s1];
-                            tmp=x*y;
-                            if (! isnan(tmp)) {
-                                ssd -=tmp;
-                                sumx +=x;
-                                sumy +=y;
-                                sumx2 +=x*x;
-                                npairs +=1;
-                            }
-                        }
-                    }
-                ssd += (sumx*sumy)/npairs;
-                ssd /= sumx2;
-            } else {
-                for (s1=0; s1<nb_sam_sel; s1++)
-                    for (s2=s1+1; s2<nb_sam_sel; s2++) {
-                       if (!isnan((*matfortestnan)[s1][s2])) { // there is genetic info (!isnan) and the pair is not excluded by poptypeselection (=> is in matfortestnan)
-                            x = (p[s2]>p[s1]? idistmat[p[s1]][p[s2]]:idistmat[p[s2]][p[s1]]);
-                            y = idistmat[s2][s1];
-                                ssd -= x*y;
-    //cout <<double(x)<<" "<<double(y)<<" "<<double(tmp)<<" ";
-//                npairs++;
-                        }
-                   }
-        		}
-//cout<<npairs;getchar();
-//cout<<double(ssd);getchar();
-        	if (ssd >= ssdobs-numeric_limits<float>::epsilon()) {Pvalueneg += 1.0;}
-        	if (ssd <= ssdobs+numeric_limits<float>::epsilon()) {Pvaluepos += 1.0;}
+		  if(cmp_nocase(typeSelection,"inter")==0) {// even for 'inter', permutation of type 1 samples is enough
+		    size_t locint=selectedpops1.size();
+		    for(t=0;t<locint-1;t++){
+		      k=aleam.randInt(locint-t-1)+t; //dans t+[0,locint-t-1] = [t,locint[
+		      //cout<<t<<" "<<k<<" "<<selectedpops1[t]<<" "<<selectedpops1[k]<<endl;
+		      z=p[selectedpops1[k]];p[selectedpops1[k]]=p[selectedpops1[t]];p[selectedpops1[t]]=z;
+		      //note that p may refer to two selected types of pops but still only type 1 positions are permuted
+		      //ostream_vector(p,cout);getchar();
+		    }
+		  } else { // "all" or "only": permutation of all elements of p
+		    for(t=0;t<nb_sam_sel-1;t++){
+		      k=aleam.randInt(nb_sam_sel-t-1)+t; //dans t+[0,nb_sam_sel-t-1] = [t,nb_sam_sel[
+		      z=p[k];p[k]=p[t];p[t]=z;
+		    }
+		  }
+		  ssd=0.0;
+		  
+		  if (needmarginals) {
+		    sumx=0.;
+		    sumy=0.;
+		    sumx2=0.0;
+		    npairs=0;
+		    
+		    for (s1=0; s1<nb_sam_sel-1; s1++)
+		      for (s2=s1+1; s2<nb_sam_sel; s2++) {
+		        if (p[s2]>p[s1]) {
+		          lo=p[s1]; up=p[s2];
+		        } else {lo=p[s2]; up=p[s1];}
+		        y = idistmat[lo][up]; // genetic !
+		        if (!isnan(y)) { //(full y) there is genetic info (!isnan) and the pair is not excluded by poptypeselection => is in matfortestnan
+		          x = idistmat[s2][s1]; // geographic !
+		          tmp=x*y;
+		          if (! isnan(tmp)) {
+		            ssd -=tmp;
+		            sumx +=x;
+		            sumy +=y;
+		            sumx2 +=x*x;
+		            npairs +=1;
+		          }
+		        }
+		      }
+		    ssd += (sumx*sumy)/npairs;
+		    ssd /= sumx2;
+		  } else {
+		    for (s1=0; s1<nb_sam_sel; s1++)
+		      for (s2=s1+1; s2<nb_sam_sel; s2++) {
+		        if (p[s2]>p[s1]) {
+		          lo=p[s1]; up=p[s2];
+		        } else {lo=p[s2]; up=p[s1];}
+		        y = idistmat[lo][up]; // genetic !
+		        if (!isnan(y)) { // there is genetic info (!isnan) and the pair is not excluded by poptypeselection (=> is in matfortestnan)
+		          x = idistmat[s2][s1]; // geographic !
+		          ssd -= x*y;
+		          //cout <<double(x)<<" "<<double(y)<<" "<<double(tmp)<<" ";
+		          //                npairs++;
+		        }
+		      }
+		  }
+		  //cout<<npairs;getchar();
+		  if (ssd >= ssdobs-numeric_limits<float>::epsilon()) {Pvalueneg += 1.0;}
+		  if (ssd <= ssdobs+numeric_limits<float>::epsilon()) {Pvaluepos += 1.0;}
 		}   /* end, FOR nperm */
         Pvalueneg=Pvalueneg/mantelPerms;
         Pvaluepos=Pvaluepos/mantelPerms;
@@ -2118,9 +2135,9 @@ void idxsup(vector<vector<long double> >& locdata,
             vector<vector<long double> >& indx)
 //after Press et al indexx: create a semimatrix of ranks indx[][]
 //for a (j>i) semi matrix (i,j)
-// comme dans idxinf les NaN sont trait�s comme des -Inf.
-// ici de toute fa�on les rangs correspondants ne sont pas utilis�s par le test de
-// Mantel; �a �vite juste de donner des rangs al�atoires sinon
+// comme dans idxinf les NaN sont traites comme des -Inf.
+// ici de toute faeon les rangs correspondants ne sont pas utilises par le test de
+// Mantel; ea evite juste de donner des rangs aleatoires sinon
 {
 using namespace NS_F_est;
   size_t i,j,jj, l,ir,indxt,jl;
@@ -2195,9 +2212,9 @@ size_t locdatasize=locdata.size();
 vector<size_t>ivect(nb_pair_sam_sel+2);
 vector<size_t>jvect(nb_pair_sam_sel+2);
 vector<size_t>jjvect(nb_pair_sam_sel+2);
-vector<long double>dvect(nb_pair_sam_sel+2); // case O pas utilis�e
-i=1; // noter la valeur 0 dans la case zero pas utilis�e
-for (j=0;j<locdatasize-1;j++) { // remplit les cases 1 �...
+vector<long double>dvect(nb_pair_sam_sel+2); // case O pas utilisee
+i=1; // noter la valeur 0 dans la case zero pas utilisee
+for (j=0;j<locdatasize-1;j++) { // remplit les cases 1 e...
 	for(jj=j+1;jj<locdatasize;jj++)	{
 		ivect[i]=i;
         dvect[i]=locdata[jj][j];
@@ -2279,7 +2296,7 @@ void lecture_popi_popj() {
 //getchar();
 
 
-//va maintenant chercher les MS pour chaque pop (ou ind) aux diff�rents loci dans binary.sss
+//va maintenant chercher les MS pour chaque pop (ou ind) aux differents loci dans binary.sss
 //cout<<"ICI"<<nb_locus;getchar();
     for(size_t loc1=0;loc1<nb_locus;loc1++) {
 #ifdef BINFILE
@@ -2313,7 +2330,7 @@ void lecture_popi_popj() {
                     sumQpp+=Qpp[loc1]*ABCweight[loc1];
         //		sumQriQrj+=(QriQrj[loc1]/nnn[loc1])*ABCweight[loc1];
                     sumQriQrj+=houla[loc1][popi-1][popj-2]*ABCweight[loc1];
-                    // (: l'aternative est de recalculer QriQrj et nnn � chaque iteration du bootstrap par lecture_Xi_Xj_pmoy;
+                    // (: l'aternative est de recalculer QriQrj et nnn e chaque iteration du bootstrap par lecture_Xi_Xj_pmoy;
                 }
                 //Note hack on loc_MSG in MS_for_isolde: it contains MSp or MSi if haploid singleGeneDiv
                 denom_pot+=ABCweight[loc1]*loc_MSG[loc1];
@@ -2374,10 +2391,10 @@ double pot;
     if(fabs(denom_pot)<0.000001) {
         f_mig<<"NaN                  "; // FR10/2010
     } else {//pot=(MSp2P-MSg2P)/denom_pot;//ancien estimateur
-        if (_e_stat) pot=-2.*(sumQbij-sumQriQrj+sumQpp)/denom_pot; //noter sumQriQrj*=2.; � la fin de lecture_popi_popj();
+        if (_e_stat) pot=-2.*(sumQbij-sumQriQrj+sumQpp)/denom_pot; //noter sumQriQrj*=2.; a la fin de lecture_popi_popj();
         else if (_a_stat || singleGeneDiv) {
             pot=MSp2P/denom_pot-0.5;
-        } else { //cout<<denom_pot<<" "<<MSi2P<<" "<<MSp2P;getchar(); //du m� ordre => donne scaling MSI ici
+        } else { //cout<<denom_pot<<" "<<MSi2P<<" "<<MSp2P;getchar(); //du meme ordre => donne scaling MSI ici
             pot=(MSp2P-MSi2P)/denom_pot;	//Fst WeirC84: (MSp-MSi)/(MSp+MSi)
             pot/=(1.-pot); //(MSp-MSi)/(2*MSi)
         }

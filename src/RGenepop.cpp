@@ -38,6 +38,7 @@ knowledge of the CeCILL license and that you accept its terms.
 
 #include "RGenepop.h"
 #include "GenepopS.h"
+#include "tools.h"
 
 #include <sstream>
 #include <unistd.h>
@@ -85,7 +86,7 @@ void cleanRGenepop() {
 //   RmantelSeed = 67144630;
 // }
 
-//'@name genepop-internals
+//'@name genepop-utils
 //'@title Programming utilities 
 //'@description \code{getVersion} returns the version number of the C++ code (the same number that identifies the C++ executable). \code{set_restriction(TRUE)} sets the maximum number of populations and of loci to 300.
 //'@param set logical: whether to set restrictions on number of populations and of loci
@@ -1440,7 +1441,7 @@ std::string REstimatingSpatialStructureAlleleSizeAllPopulationsPairs(std::string
     agv[13] = getOptionModeBatch();
 
     printCmd(agc, agv);
-
+    
     mainJimmy(agc, agv);
 
     //system("rm -f LOCUS*"); // return value ignored
@@ -1507,7 +1508,7 @@ std::string RIsolationByDistanceBetweenIndividualsWithSettingsFile(std::string i
   
   std::ifstream infile(settingsFile.c_str());
   std::string line;
-
+  
   int i = 3;
   agv[0] = getNameProg();
   agv[1] = getOptionInputFile(inputFile);

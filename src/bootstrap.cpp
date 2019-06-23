@@ -45,6 +45,9 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "tools.h"
 #ifdef COMPATIBILITYRCPP
 #include <Rcpp.h>
+// [[Rcpp::depends(RcppProgress)]]
+#include <progress.hpp>
+#include <progress_bar.hpp>
 #endif
 
 using namespace std;
@@ -178,30 +181,42 @@ int CABCbootstrap::bootstrapOverLoci(double (*estimatingFnPtr)(vector<double> d)
     noR_cout<<" Computing [ "<<seuil_inf<<"- "<<seuil_sup<<" ] confidence interval"<<legend<<":";
 	//pour borne inf
 	epsn=-epsn_value;
+#ifdef COMPATIBILITYRCPP
+	Rcpp::Rcerr<<"Computing confidence interval"<<legend<<":"<<endl;
+	Progress progbar(2*nb_units, true);
+#endif
 	for(ABCloc=0;ABCloc<nb_units;ABCloc++) {
         for(size_t loc=0;loc<nb_units;loc++)
-            locABCweight[loc]=-1.0*epsn/nb_units+1.0/nb_units;
-        locABCweight[ABCloc]+=1.0*epsn;
+            locABCweight[loc]= - epsn/nb_units+1.0/nb_units;
+        locABCweight[ABCloc]+= epsn;
 //ostream_vector(locABCweight,cout);getchar();
         tminput[ABCloc]=(*estimatingFnPtr)(locABCweight);
 //cout<<tminput[ABCloc];getchar();
-        _gotoxy(0,consy+3);
-        noR_cout<<" Computing confidence interval... about      % done             ";
-        _gotoxy(41,consy+3);
-        noR_cout<< int(100*(double(ABCloc)+1.0)/(2*double(nb_units)+5.0));
+#ifdef COMPATIBILITYRCPP
+progbar.increment();
+#else
+_gotoxy(0,consy+3);
+noR_cout<<" Computing confidence interval... about      % done             ";
+_gotoxy(41,consy+3);
+noR_cout<< int(100*(double(ABCloc)+1.0)/(2*double(nb_units)+5.0));
+#endif
     }
 
 	//pour borne sup
 	epsn=epsn_value;
 	for(ABCloc=0;ABCloc<nb_units;ABCloc++) {
         for(size_t loc=0;loc<nb_units;loc++)
-            locABCweight[loc]=-1.0*epsn/nb_units+1.0/nb_units;
-        locABCweight[ABCloc]+=1.0*epsn;
+            locABCweight[loc]= - epsn/nb_units+1.0/nb_units;
+        locABCweight[ABCloc]+= epsn;
         tpinput[ABCloc]=(*estimatingFnPtr)(locABCweight);
+#ifdef COMPATIBILITYRCPP
+        progbar.increment();
+#else
         _gotoxy(0,consy+3);
         noR_cout<<" Computing confidence interval... about      % done            ";
         _gotoxy(41,consy+3);
         noR_cout<< int(100*(double(ABCloc)+double(nb_units)+1.0)/(2*double(nb_units)+5.0));
+#endif
     }
 
 	for(size_t loc=0;loc<nb_units;loc++) {
@@ -316,7 +331,7 @@ int CABCbootstrap::bootstrapOverLoci(double (*estimatingFnPtr)(vector<double> d)
         bootOut<<"\n ABC bootstrap results"<<legend<<":";
 	    bootOut<<"\n Point estimate and "<<100*widthCI<<"% confidence interval:\n"<<t0<<" [ "<<tinf<<" , "<<tsup<<" ]\n";
  	}
- 	if ( std::strcmp(legend.c_str(), " for slope")==0 && ! std::isnan(testPointslope)) {
+ 	if ( std::strcmp(legend.c_str(), " for SLOPE")==0 && ! std::isnan(testPointslope)) {
  	    //FR->FR comme on n'est pas surde travailler sur des slopes ici, il faut un mecanisme genre migraine sur les testPoint
         testPointPvalue=Pvalue(testPointslope,true,false);
         if (std::isnan(testPointPvalue)) Pvalue(testPointslope,true,true); // verbose version
