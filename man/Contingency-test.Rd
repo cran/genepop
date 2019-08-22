@@ -28,9 +28,7 @@ The path of the output file is returned invisibly.
 Performs an exact conditional contingency-table test. There are many other ways of doing this in R but this function replicates the functionality of earlier genepop code analysing a contingency table provided in a file with ad hoc format. See \href{../doc/all-menu-options.html#analyzing-a-single-contingency-table}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'structest.txt',package='genepop')
-locinfile <- 'structest.txt'
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('structest.txt')
 struc(locinfile)
 if ( ! interactive()) clean_workdir(otherfiles='structest.txt')
 }

@@ -27,9 +27,7 @@ The path of the output file is returned invisibly.
 Evaluates Fst or related measures based on allele sizes, for all populations of for all pairs of populations. See \href{../doc/all-menu-options.html#sub-options-14-f-statistics-and-rho-statistics}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 Fst(locinfile, outputFile= 'sample.txt.DIV')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

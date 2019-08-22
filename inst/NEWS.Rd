@@ -3,7 +3,14 @@
 \encoding{UTF-8}
 % cf ?news for the format and usage of this file
 %
-\section{CHANGES UP TO VERSION 1.1.1}{
+\section{CHANGES UP TO VERSION 1.1.3}{
+\subsection{NEW FEATURES}{
+\itemize{
+\item New convenience function genepopExample() replacing potentially confusing code in the Examples
+}
+}
+}
+\section{CHANGES UP TO VERSION 1.1.2}{
 \subsection{NEW FEATURES}{
 \itemize{
 \item New keyword `intra_all_types` for setting "popTypeSelection" allows one to perform a single spatial regression for all pairs of individuals or populations within several types of subpopulations.

@@ -47,15 +47,11 @@ Estimates isolation by distance by regression of genetic distance to geographica
 }
 \examples{
 \dontrun{
-infile <- system.file('extdata', 'w2.txt',package='genepop')
-locinfile <- 'w2.txt'
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('w2.txt')
 outfile <- ibd(locinfile,'w2.txt.ISO', geographicScale = 'Log', statistic='e')
 if ( ! interactive()) clean_workdir(otherfiles='w2.txt')
 
-infile <- system.file('extdata', 'PEL1600withCoord.txt',package='genepop')
-locinfile <- 'PEL1600withCoord.txt'
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('PEL1600withCoord.txt')
 outfile <- ibd(locinfile,'PEL1600withCoord.ISO', statistic = 'SingleGeneDiv',
                geographicScale = '1D')
 if ( ! interactive()) clean_workdir(otherfiles='PEL1600withCoord.txt')

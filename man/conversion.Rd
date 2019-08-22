@@ -22,9 +22,7 @@ The path of the output file is returned invisibly.
 Converts input files from genepop format to some other formats (some maybe only of historical interest): Fstat, two Biosys formats. and linkdos. See \href{../doc/all-menu-options.html#option-7-file-conversions}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt'
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 conversion(locinfile, format='Fstat', 'sample.txt.DAT')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

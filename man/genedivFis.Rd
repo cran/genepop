@@ -25,9 +25,7 @@ The path of the output file is returned invisibly.
 Evaluates Fis and gene diversities, or related measures based on allele sizes. See \href{../doc/all-menu-options.html#sub-option-2-identity-based-gene-diversities-and-f_mathrmis}{this section} of the Genepop executable documentation for more information on the identity-based statistical methods, and \href{../doc/all-menu-options.html#sub-option-3-allele-size-based-gene-diversities-and-rho_mathrmis}{this one} for allele-size based ones.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 genedivFis(locinfile,outputFile = 'sample.txt.DIV')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

@@ -21,7 +21,6 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
             pdftitle={Genepop version 4.7.2},
@@ -67,7 +66,7 @@
 \usepackage{titling}
 
 % Create subtitle command for use in maketitle
-\newcommand{\subtitle}[1]{
+\providecommand{\subtitle}[1]{
   \posttitle{
     \begin{center}\large#1\end{center}
     }
@@ -83,7 +82,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{This documentation: 21 May 2019}
+    \date{This documentation: 23 June 2019}
 
 \usepackage{makeidx}
 \usepackage[utf8]{luainputenc}
@@ -158,11 +157,23 @@ documentation.
 
 \textbf{Version 4.7.2}
 
+A new keyword \texttt{intra\_all\_types} for setting
+``popTypeSelection'' allows one to perform a single spatial regression
+(but not Mantel tests) for all pairs of individuals or populations
+within types (e.g., individuals within patches, excluding pairwise
+statistics for pairs of individuals between patches).
+
+Yet another problem has been fixed for Mantel tests' handling of missing
+pairwise genetic information (specifically for pairs of ``pop'' -- most
+likely, individuals -- sharing no genotypic information at any locus).
+
+\textbf{Version 4.7.1}
+
 Genepop is now also distributed as an R package. It now uses the
 implementation of the Mersenne twister pseudo-random number generator
 found in recent C++ compilers. This has two implications. First, a
-recent compiler must be used,as described below. Second, test results of
-previous versions cannot be exactly replicated.
+recent compiler must be used, as described below. Second, test results
+of previous versions cannot be exactly replicated.
 
 The format of a few file outputs has been modified (in particular the
 reporting of extreme values of some global tests).
@@ -181,7 +192,7 @@ excluded. This is corrected. Such cases concern in particular pairs of
 samples in the same location (e.g., pairs of individuals), when
 geographical distance is log-transformed, because the pairwise
 differentiation between such individuals cannot be used for the
-computation of the regression. The bootstrap analyses ere already
+computation of the regression. The bootstrap analyses were already
 handling correctly this case.
 
 \textbf{Version 4.5}

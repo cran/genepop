@@ -47,9 +47,7 @@
 #' @param iterations integer: Iterations per batch
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' test_HW(locinfile, which='deficit', 'sample.txt.D')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_HW <- function(inputFile, which = "Proba", outputFile = "", settingsFile = "", enumeration = FALSE, dememorization = 10000, 
@@ -97,9 +95,7 @@ test_HW <- function(inputFile, which = "Proba", outputFile = "", settingsFile = 
 
 #' @rdname Hardy-Weinberg
 #' @examples # Example in Guo & Thompson 1992 Table 5
-#' infile <- system.file('extdata', 'Rhesus.txt',package='genepop')
-#' locinfile <- 'Rhesus.txt'
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' locinfile <- genepopExample('Rhesus.txt')
 #' outfile <- HWtable_analysis(locinfile,which='Proba',batches = 1000,iterations = 1000)
 #' readLines(outfile)[21]
 #' #clean_workdir(otherfiles='Rhesus.txt')
@@ -142,9 +138,7 @@ HWtable_analysis <- function(inputFile, which = "Proba", settingsFile = "", enum
 #' @param iterations integer: Iterations per batch
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' test_LD(locinfile,'sample.txt.DIS')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, 
@@ -162,9 +156,7 @@ test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorizatio
 }
 
 #' @rdname Linkage
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' write_LD_tables(locinfile,'sample.txt.TAB')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 write_LD_tables <- function(inputFile, outputFile = "", verbose = interactive()) {
@@ -185,9 +177,7 @@ write_LD_tables <- function(inputFile, outputFile = "", verbose = interactive())
 #' @param iterations integer: Iterations per batch
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' test_diff(locinfile,outputFile='sample.txt.GE')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 test_diff <- function(inputFile, genic = TRUE, pairs = FALSE, outputFile = "", settingsFile = "", dememorization = 10000, 
@@ -244,9 +234,7 @@ test_diff <- function(inputFile, genic = TRUE, pairs = FALSE, outputFile = "", s
 #' @param iterations integer: Iterations per batch
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'structest.txt',package='genepop')
-#' locinfile <- 'structest.txt'
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('structest.txt')
 #' struc(locinfile)
 #' if ( ! interactive()) clean_workdir(otherfiles='structest.txt')
 struc <- function(inputFile, settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, verbose = interactive()) {
@@ -267,9 +255,7 @@ struc <- function(inputFile, settingsFile = "", dememorization = 10000, batches 
 #' @param dataType character: The haploid and diploid data
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' Nm_private(locinfile,'sample.txt.PRI')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose = interactive()) {
@@ -285,9 +271,7 @@ Nm_private <- function(inputFile, outputFile = "", dataType = "Diploid", verbose
 #' @param outputFile character: The path of the output file
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' basic_info(locinfile,'sample.txt.INF')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
@@ -305,9 +289,7 @@ basic_info <- function(inputFile, outputFile = "", verbose = interactive()) {
 #' @param dataType character: The haploid and diploid data
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' genedivFis(locinfile,outputFile = 'sample.txt.DIV')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
@@ -332,9 +314,7 @@ genedivFis <- function(inputFile, sizes = FALSE, outputFile = "", dataType = "Di
 #' @param dataType character: The haploid and diploid data
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' Fst(locinfile, outputFile= 'sample.txt.DIV')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataType = "Diploid", verbose = interactive()) {
@@ -378,15 +358,11 @@ Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataTy
 #' @return The path of the output file is returned invisibly.
 #' @examples
 #' \dontrun{
-#' infile <- system.file('extdata', 'w2.txt',package='genepop')
-#' locinfile <- 'w2.txt'
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' locinfile <- genepopExample('w2.txt')
 #' outfile <- ibd(locinfile,'w2.txt.ISO', geographicScale = 'Log', statistic='e')
 #' if ( ! interactive()) clean_workdir(otherfiles='w2.txt')
 #'
-#' infile <- system.file('extdata', 'PEL1600withCoord.txt',package='genepop')
-#' locinfile <- 'PEL1600withCoord.txt'
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' locinfile <- genepopExample('PEL1600withCoord.txt')
 #' outfile <- ibd(locinfile,'PEL1600withCoord.ISO', statistic = 'SingleGeneDiv',
 #'                geographicScale = '1D')
 #' if ( ! interactive()) clean_workdir(otherfiles='PEL1600withCoord.txt')
@@ -446,9 +422,7 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
 #' @param outputFile character: The path of the output file
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- 'sample.txt'
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' conversion(locinfile, format='Fstat', 'sample.txt.DAT')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 conversion <- function(inputFile, format, outputFile = "", verbose = interactive()) {
@@ -490,9 +464,7 @@ nulls <- function(inputFile, outputFile = "", settingsFile = "", nullAlleleMetho
 #' @param outputFile character: The path of the output file
 #' @param coordinates Either \code{'population'} (use population coordinates) or anything else (use individual coordinates).
 #' @param verbose logical: whether to print some information
-#' @examples infile <- system.file('extdata', 'sample.txt',package='genepop')
-#' locinfile <- "sample.txt"
-#' check <- file.copy(infile,locinfile,overwrite=TRUE)
+#' @examples locinfile <- genepopExample('sample.txt')
 #' outfile <- diploidize(inputFile = locinfile,outputFile="Dsample.txt")
 #' if ( ! interactive()) clean_workdir(c("sample.txt", "Dsample.txt"))
 
@@ -563,4 +535,18 @@ clean_workdir <- function(otherfiles=NULL, path=".", suffixes=c("GRA", "ISO", "M
   if ( in. && file.exists("fichier.in")) file.remove("fichier.in")
   if ( cmdline && file.exists("cmdline.txt")) file.remove("cmdline.txt")
   setwd(oldpath)
+}
+
+#'@rdname genepopExample
+#' @title Copy an example file from the Genepop package distribution
+#' @description This function is used to copy an example file to the user's directory. It should not be used when analysing one's own data!
+#' @param filename The name of an example file from the Genepop distribution.
+#' @return Returns the \code{filename}
+genepopExample <- function(filename) {
+  infile <- system.file('extdata', filename, package='genepop')
+  if (infile=="") stop("There is no such file in the package 'extdata' directory.")
+  locinfile <- filename ## file in user's directory not in R's extdata directory
+  check <- file.copy(infile,locinfile,overwrite=TRUE)
+  if ( ! check) stop("The file could not be copied into the user's directory.")
+  return(filename)
 }

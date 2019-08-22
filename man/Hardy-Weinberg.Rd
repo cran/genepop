@@ -40,15 +40,11 @@ The path of the output file is returned invisibly.
 Compute variants of the exact conditional test for Hardy-Weinberg genotypic proportions.  The tests differ by their test statistics. \code{HWtable_analysis} handles a single table of genotype counts, and \code{test_HW} requires a standard genepop input file. See \href{../doc/all-menu-options.html#option-1-hardy-weinberg-hw-exact-tests}{this section} of the Genepop-executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 test_HW(locinfile, which='deficit', 'sample.txt.D')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 # Example in Guo & Thompson 1992 Table 5
-infile <- system.file('extdata', 'Rhesus.txt',package='genepop')
-locinfile <- 'Rhesus.txt'
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('Rhesus.txt')
 outfile <- HWtable_analysis(locinfile,which='Proba',batches = 1000,iterations = 1000)
 readLines(outfile)[21]
 #clean_workdir(otherfiles='Rhesus.txt')

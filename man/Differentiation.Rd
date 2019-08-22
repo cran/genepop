@@ -35,9 +35,7 @@ The path of the output file is returned invisibly.
 Exact conditional contingency-table tests for genic or genotypic differentiation. A single test for all populations, or distinct tests for all pairs of populations, may be computed. See \href{../doc/all-menu-options.html#option-3-population-differentiation}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 test_diff(locinfile,outputFile='sample.txt.GE')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

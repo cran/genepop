@@ -20,9 +20,7 @@ The path of the output file is returned invisibly.
 Allele and genotype frequencies per locus and per sample. See \href{../doc/all-menu-options.html#sub-option-1-allele-and-genotype-frequencies}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 basic_info(locinfile,'sample.txt.INF')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

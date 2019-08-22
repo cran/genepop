@@ -34,14 +34,10 @@ The path of the output file is returned invisibly.
 Exact test for each pair of loci in each population. See \href{../doc/all-menu-options.html#option-2-tests-and-tables-for-linkage-disequilibrium}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 test_LD(locinfile,'sample.txt.DIS')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 write_LD_tables(locinfile,'sample.txt.TAB')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }

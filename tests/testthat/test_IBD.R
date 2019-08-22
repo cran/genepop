@@ -1,17 +1,13 @@
 cat("test_IBD.R:\n")
 
-infile <- system.file("extdata", "w2.txt",package="genepop")
-locinfile <- "w2.txt"
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('w2.txt')
 outfile <- ibd(locinfile,"w2.txt.ISO", geographicScale = "Log", statistic="e")
 if (sessionInfo()[["R.version"]][["arch"]]=="i386") { # i386 vs x64
-  expect_equal(readLines(outfile)[229], "0.01514 [ -0.0143952 , 0.0374583 ]") 
+  testthat::expect_equal(readLines(outfile)[229], "0.01514 [ -0.0143952 , 0.0374583 ]") 
 } else testthat::expect_equal(readLines(outfile)[229], "0.01514 [ -0.0143947 , 0.0374584 ]")
 
 
-infile <- system.file("extdata", "PEL1600withCoord.txt",package="genepop")
-locinfile <- "PEL1600withCoord.txt"
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('PEL1600withCoord.txt')
 outfile <- ibd(locinfile,"PEL1600withCoord.ISO", statistic = "SingleGeneDiv",
                geographicScale = "1D")
 nums <- as.numeric(unlist(strsplit(readLines(outfile)[59], "[^0-9e.-]+")))

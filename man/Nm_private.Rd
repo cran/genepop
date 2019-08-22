@@ -23,9 +23,7 @@ The path of the output file is returned invisibly.
 Estimation of Nm by private allele method of Slatkin and Barton. See \href{../doc/all-menu-options.html#option-4-private-alleles}{this section} of the Genepop executable documentation for more information on the statistical methods.
 }
 \examples{
-infile <- system.file('extdata', 'sample.txt',package='genepop')
-locinfile <- 'sample.txt' ## file in user's directory not in R's extdata directory
-check <- file.copy(infile,locinfile,overwrite=TRUE)
+locinfile <- genepopExample('sample.txt')
 Nm_private(locinfile,'sample.txt.PRI')
 if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
 }
