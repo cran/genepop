@@ -5,8 +5,14 @@
 \alias{struc}
 \title{Exact test on a single contingency table}
 \usage{
-struc(inputFile, settingsFile = "", dememorization = 10000,
-  batches = 100, iterations = 5000, verbose = interactive())
+struc(
+  inputFile,
+  settingsFile = "",
+  dememorization = 10000,
+  batches = 100,
+  iterations = 5000,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{character: The path of the input file. This file should be in an ad hoc format}

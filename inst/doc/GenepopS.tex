@@ -21,9 +21,10 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
+\usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Genepop version 4.7.2},
+            pdftitle={Genepop version 4.7.3},
             pdfauthor={F. Rousset},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -66,7 +67,7 @@
 \usepackage{titling}
 
 % Create subtitle command for use in maketitle
-\providecommand{\subtitle}[1]{
+\newcommand{\subtitle}[1]{
   \posttitle{
     \begin{center}\large#1\end{center}
     }
@@ -74,7 +75,7 @@
 
 \setlength{\droptitle}{-2em}
 
-  \title{Genepop version 4.7.2}
+  \title{Genepop version 4.7.3}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
     \author{F. Rousset}
@@ -82,7 +83,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{This documentation: 23 June 2019}
+    \date{This documentation: 06 December 2019}
 
 \usepackage{makeidx}
 \usepackage[utf8]{luainputenc}
@@ -2855,7 +2856,7 @@ See the distribution page for more recent bug fixes.
 
 All contents of the R package are covered by its license, the
 GPL-compatible CeCill 2.1 license (see
-\url{http://www.cecill.info/index.en.html}).
+\url{https://cecill.info/licences/Licence_CeCILL_V2.1-en.html}).
 
 \index{Bootstrap|see{Confidence intervals}}
 \index{Genepop@\Genepop, differences from previous versions|see{also footnotes throughout this document}}

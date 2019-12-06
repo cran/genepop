@@ -4,8 +4,14 @@
 \alias{Fst}
 \title{Fst (or rho_ST) estimation}
 \usage{
-Fst(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "",
-  dataType = "Diploid", verbose = interactive())
+Fst(
+  inputFile,
+  sizes = FALSE,
+  pairs = FALSE,
+  outputFile = "",
+  dataType = "Diploid",
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

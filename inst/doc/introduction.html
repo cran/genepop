@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Genepop version 4.7.1</title>
-  <meta name="description" content="Genepop version 4.7.1">
-  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Genepop version 4.7.3</title>
+  <meta name="description" content="Genepop version 4.7.3" />
+  <meta name="generator" content="bookdown 0.10 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Genepop version 4.7.1" />
+  <meta property="og:title" content="Genepop version 4.7.3" />
   <meta property="og:type" content="book" />
   
   
@@ -17,24 +16,25 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Genepop version 4.7.1" />
+  <meta name="twitter:title" content="Genepop version 4.7.3" />
   
   
   
 
-<meta name="author" content="F. Rousset">
+<meta name="author" content="F. Rousset" />
 
 
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 
 <link rel="next" href="installing-genepop-and-session-examples.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
@@ -165,7 +165,7 @@
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Genepop version 4.7.1</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Genepop version 4.7.3</a>
           </h1>
         </div>
 
@@ -174,9 +174,9 @@
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">Genepop version 4.7.1</h1>
-<h4 class="author"><em>F. Rousset</em></h4>
-<h4 class="date"><em>This documentation: 19 January 2018</em></h4>
+<h1 class="title">Genepop version 4.7.3</h1>
+<p class="author"><em>F. Rousset</em></p>
+<p class="date"><em>This documentation: 06 December 2019</em></p>
 </div>
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
@@ -198,12 +198,16 @@
 <div id="changes-since-version-4.0" class="section level2">
 <h2><span class="header-section-number">1.3</span> Changes since version 4.0</h2>
 
+<!-- **Version 4.7.3** -->
+<p><strong>Version 4.7.2</strong></p>
+<p>A new keyword <code>intra_all_types</code> for setting “popTypeSelection” allows one to perform a single spatial regression (but not Mantel tests) for all pairs of individuals or populations within types (e.g., individuals within patches, excluding pairwise statistics for pairs of individuals between patches).</p>
+<p>Yet another problem has been fixed for Mantel tests’ handling of missing pairwise genetic information (specifically for pairs of “pop” – most likely, individuals – sharing no genotypic information at any locus).</p>
 <p><strong>Version 4.7.1</strong></p>
-<p>Genepop is now also distributed as an R package. It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used,as described below. Second, test results of previous versions cannot be exactly replicated.</p>
+<p>Genepop is now also distributed as an R package. It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used, as described below. Second, test results of previous versions cannot be exactly replicated.</p>
 <p>The format of a few file outputs has been modified (in particular the reporting of extreme values of some global tests).</p>
 <p><strong>Version 4.6</strong></p>
-<p>A bootstrap analysis of mean differentiation has been introduced, in particular to allow comparison of the mean differentiation observed over a given range of geographical distances, in intra vs. inter-ecotypic analyses. It can be called by the setting <code>meanDifferentiationTest</code>.</p>
-<p>The Mantel test based on regression slope (not the one on ranks) was not handling appropriately cases where some pairwise data had to be excluded. This is corrected. Such cases concern in particular pairs of samples in the same location (e.g., pairs of individuals), when geographical distance is log-transformed, because the pairwise differentiation between such individuals cannot be used for the computation of the regression. The bootstrap analyses ere already handling correctly this case.</p>
+<p>A bootstrap analysis of mean differentiation has been introduced, in particular to allow comparison of the mean differentiation observed over a given range of geographical distances, in intra vs. inter-ecotypic analyses. It can be called by the setting <code>meanDifferentiationTest</code>.</p>
+<p>The Mantel test based on regression slope (not the one on ranks) was not handling appropriately cases where some pairwise data had to be excluded. This is corrected. Such cases concern in particular pairs of samples in the same location (e.g., pairs of individuals), when geographical distance is log-transformed, because the pairwise differentiation between such individuals cannot be used for the computation of the regression. The bootstrap analyses were already handling correctly this case.</p>
 <p><strong>Version 4.5</strong></p>
 <p>A new keyword <code>inter_all_types</code> for setting “popTypeSelection” allows one to perform spatial regressions (but not Mantel tests) between all pairs of individuals or populations belonging to different types (e.g., individuals belonging to different patches, excluding pairwise statistics for pairs of individuals within patches).</p>
 <p><strong>Version 4.4</strong></p>
@@ -250,10 +254,11 @@ gitbook.start({
 "facebook": true,
 "twitter": true,
 "google": false,
+"linkedin": false,
 "weibo": false,
-"instapper": false,
+"instapaper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
@@ -261,6 +266,10 @@ gitbook.start({
 "size": 2
 },
 "edit": {
+"link": null,
+"text": null
+},
+"history": {
 "link": null,
 "text": null
 },
@@ -278,9 +287,11 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(script.src))
-      script.src  = script.src.replace(/^https?:/, '');
+    var src = "";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

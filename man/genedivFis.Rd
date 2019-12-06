@@ -4,8 +4,13 @@
 \alias{genedivFis}
 \title{Gene diversities and Fis (or rho_IS)}
 \usage{
-genedivFis(inputFile, sizes = FALSE, outputFile = "",
-  dataType = "Diploid", verbose = interactive())
+genedivFis(
+  inputFile,
+  sizes = FALSE,
+  outputFile = "",
+  dataType = "Diploid",
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

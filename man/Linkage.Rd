@@ -6,9 +6,15 @@
 \alias{write_LD_tables}
 \title{Tables and exact test for genotypic linkage disequilibrium}
 \usage{
-test_LD(inputFile, outputFile = "", settingsFile = "",
-  dememorization = 10000, batches = 100, iterations = 5000,
-  verbose = interactive())
+test_LD(
+  inputFile,
+  outputFile = "",
+  settingsFile = "",
+  dememorization = 10000,
+  batches = 100,
+  iterations = 5000,
+  verbose = interactive()
+)
 
 write_LD_tables(inputFile, outputFile = "", verbose = interactive())
 }

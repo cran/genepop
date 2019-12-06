@@ -4,10 +4,14 @@
 \alias{clean_workdir}
 \title{Removing files created by Genepop}
 \usage{
-clean_workdir(otherfiles = NULL, path = ".", suffixes = c("GRA",
-  "ISO", "MIG", "PRI", "DAT", "DG", "DIV", "D", "DIS", "FST", "NUL", "RHO",
-  "2G2", "G", "GE", "GE2", "INF", "MSD", "TAB", "ST2"), in. = TRUE,
-  cmdline = TRUE)
+clean_workdir(
+  otherfiles = NULL,
+  path = ".",
+  suffixes = c("GRA", "ISO", "MIG", "PRI", "DAT", "DG", "DIV", "D", "DIS", "FST", "NUL",
+    "RHO", "2G2", "G", "GE", "GE2", "INF", "MSD", "TAB", "ST2"),
+  in. = TRUE,
+  cmdline = TRUE
+)
 }
 \arguments{
 \item{otherfiles}{Character vector(s): one or more names of files to be removed and not matched by the other arguments (such as the input file, or some output files not identified by their suffix, as shown in the Example).}

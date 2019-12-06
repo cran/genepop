@@ -1025,7 +1025,7 @@ See the distribution page for more recent bug fixes.
 Copyright
 =========
 
-  All contents of the R package are covered by its license, the GPL-compatible CeCill 2.1 license (see <http://www.cecill.info/index.en.html>). 
+  All contents of the R package are covered by its license, the GPL-compatible CeCill 2.1 license (see <https://cecill.info/licences/Licence_CeCILL_V2.1-en.html>). 
 
  \index{Bootstrap|see{Confidence intervals}}
  \index{Genepop@\Genepop, differences from previous versions|see{also footnotes throughout this document}}

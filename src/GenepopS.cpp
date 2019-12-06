@@ -88,7 +88,7 @@ using namespace std;
 //string version=" v4.0 (Built on "+datestring+" at "+timestring+").";
 //string version="4.6";
 std::string getSetting(const std::string which) {
-  const std::string version="4.7.2"; // the O N L Y place to story this info.
+  const std::string version="4.7.3"; // the O N L Y place to story this info.
   if (which.compare("version")==0) return(version);
   if (which.compare("default_settingsfile")==0) return("genepop.txt");
   return("unknown 'which' value");
@@ -619,6 +619,20 @@ if (!glob) enum_test_et_affich(exacName);  //enumeration tests plus affichages d
 return 0;
 }
 
+int print_p(double pchi, ostream& fichier_out, int prec, bool endline);
+int print_p(double pchi, ostream& fichier_out, int prec, bool endline) {
+  if (pchi<1e-04) { 
+    fichier_out.precision(2);
+    fichier_out<<scientific<<pchi<<fixed;
+    fichier_out.precision(prec);
+  } else {
+    fichier_out.precision(prec);
+    fichier_out<<fixed<<pchi;
+  }
+  if (endline) fichier_out<<endl;
+  return(0);
+}
+
 //---------------- option 2.1, 2.3 -------------------
 int LDtest() {
 using namespace NS_GP;
@@ -750,12 +764,12 @@ switchFnPtr=&Cctable::switchSP; // pas de statistique G allelique
               chi2(pchi,ddl,float(fisher));
               wdisOut<<setw(5)<<ddl;
               if(pchi != -1){
-                wdisOut.precision(6);
                 if (infini) {
-                  wdisOut<<"<"<< setw(7)<<fixed<<pchi<<endl;
+                  wdisOut<<"<"<< setw(7);
                 } else {
-                  wdisOut<<setw(8)<<fixed<<pchi<<endl;
+                  wdisOut<<setw(8);
                 }
+                print_p(pchi, wdisOut, 6, true);
               } else{
                 wdisOut<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -790,10 +804,13 @@ if (liptakBool) // false pour l'instant, mais garder le code
                }else{
                  ntests+=1;
                  if(tabF[pairit][p] < numeric_limits<float>::epsilon()){
-                    liptak+= ndtri(numeric_limits<float>::epsilon());
+                     noR_cout<<"\nQuick patch in Z test for estimated p=0\n";
+                     liptak+=ndtri(numeric_limits<float>::epsilon()); //QUICK PATCH quantile at (epsilon)~est.pvalue
                      infini = true;
+                     // next p
                   }else if(tabF[pairit][p] == 1){
-                     liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH
+                    noR_cout<<"\nQuick patch in Z test for estimated p=1\n"; // combining the two patches is not perfect...
+                    liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH
                   }else{
                      liptak+=ndtri(tabF[pairit][p]);
                   }
@@ -808,13 +825,13 @@ if (liptakBool) // false pour l'instant, mais garder le code
               }
               liptak=ndtr(liptak/sqrt(ntests));
               wdisOut<<setw(5)<<ntests;
-              wdisOut.precision(6);
               if(liptak != 0.0){
-                if((infini)){
-                  wdisOut<<"<"<<setw(7)<<fixed<<liptak<<endl;
+                if(infini){
+                  wdisOut<<"<"<<setw(7);
                 }else{
-                  wdisOut<<setw(8)<<fixed<<liptak<<endl;
+                  wdisOut<<setw(8);
                 }
+                print_p(liptak, wdisOut, 6, true);
               } else{
                 wdisOut<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -1146,8 +1163,8 @@ bool affichIntermBool=false;
              fichier_out<<"-";
             }
             fichier_out<<endl;
-            fichier_out<<setw(30)<<"Population pair"<<setw(10)<<"Chi2"<<setw(5)<<"df"<<"P-Value"<<endl;
-            fichier_out<<setw(30)<<"--------------------"<<setw(10)<<"--------"<<setw(5)<<"---"<<"--------"<<endl;
+            fichier_out<<setw(30)<<"Population pair"<<setw(11)<<"Chi2"<<setw(6)<<"df"<<"P-Value"<<endl;
+            fichier_out<<setw(30)<<"--------------------"<<setw(11)<<"---------"<<setw(6)<<"-----"<<"---------"<<endl;
             pairit = 0;
             for(size_t ll = 0; ll < nb_sam; ll++){
                 for(size_t mm = 0; mm < ll; mm++){
@@ -1160,6 +1177,7 @@ bool affichIntermBool=false;
                    }else{
                       if(tabF[pairit][p] == 0){
                          infini = true;
+                         fisher+=2.*log(batchnbr*batchlgth); // i.e. *-=* 2 log(bound on freq)
                          ddl+=2;
                          // next p
                       }else{
@@ -1170,21 +1188,20 @@ bool affichIntermBool=false;
                 } // next p
                 fichier_out<<setw(13)<<fichier_genepop->pops[mm]->popName().substr(0,13)<<" & "<<setw(14)<<fichier_genepop->pops[ll]->popName().substr(0,13);
                 if(ddl > 0){
-
                   if (infini) {
                     fichier_out<<">"<<setw(9)<<fisher;
                   } else {
                     fichier_out<<setw(10)<<fisher;
                   }
                   chi2(pchi,ddl,float(fisher));
-                  fichier_out<<setw(5)<<ddl;
+                  fichier_out<<" "<<setw(6)<<ddl;
                   if(pchi != -1){
-                    fichier_out.precision(6);
                     if (infini) {
-                      fichier_out<<"<"<< setw(7)<<fixed<<pchi<<endl;
+                      fichier_out<<"<"<< setw(7);
                     } else {
-                      fichier_out<<setw(8)<<fixed<<pchi<<endl;
+                      fichier_out<<setw(8);
                     }
+                    print_p(pchi, fichier_out, 6, true);
                   } else{
                     fichier_out<<"Highly sign."<<endl;
                   }
@@ -1203,8 +1220,8 @@ bool affichIntermBool=false;
              fichier_out<<"-";
             }
             fichier_out<<endl;
-            fichier_out<<setw(30)<<"Population pair"<<setw(10)<<"Z"<<setw(5)<<"#"<<"P-value"<<endl;
-            fichier_out<<setw(30)<<"--------------------"<<setw(10)<<"--------"<<setw(5)<<"---"<<"--------"<<endl;
+            fichier_out<<setw(30)<<"Population pair"<<setw(11)<<"Z"<<setw(6)<<"#"<<"P-value"<<endl;
+            fichier_out<<setw(30)<<"--------------------"<<setw(11)<<"--------"<<setw(6)<<"-----"<<"--------"<<endl;
             pairit = 0;
             for(size_t ll = 0; ll < nb_sam; ll++){
                 for(size_t mm = 0; mm < ll; mm++){
@@ -1215,18 +1232,18 @@ bool affichIntermBool=false;
                    if(tabF[pairit][p] <= -1){
                    //next p
                    }else{
-                      if(tabF[pairit][p] == 0){
-                         ntests+=1;
-                         infini = true;
+                     ntests+=1;
+                     if(tabF[pairit][p] == 0){
+                        noR_cout<<"\nQuick patch in Z test for estimated p=0\n";
+                        liptak+=ndtri(numeric_limits<float>::epsilon()); //QUICK PATCH quantile at (epsilon)~est.pvalue
+                        infini = true;
                          // next p
                       }else if(tabF[pairit][p] == 1){
-                         ntests+=1;
-                         noR_cout<<"\nbad quick patch in Z test\n";
-                         liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH
+                         noR_cout<<"\nQuick patch in Z test for estimated p=1\n"; // combining the two patches is not perfect...
+                         liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH quantile at (1-epsilon)~est.pvalue
                          // next p
                       }else{
-                         ntests+=1;
-                         liptak+=ndtri(tabF[pairit][p]);
+                         liptak+=ndtri(tabF[pairit][p]); // quantile at p-value
                       }
                    }
                 } // next p
@@ -1238,15 +1255,15 @@ bool affichIntermBool=false;
                       fichier_out<<setw(10)<<liptak;
                    }
                   liptak=ndtr(liptak/sqrt(ntests));
-                  fichier_out<<setw(5)<<ntests;
-                  fichier_out.precision(6);
+                  fichier_out<<" "<<setw(6)<<ntests;
                   if(liptak != 0.0){
-                    if((infini)){
-                      fichier_out<<"<"<<setw(7)<<fixed<<liptak<<endl;
-                    }else{
-                      fichier_out<<setw(8)<<fixed<<liptak<<endl;
+                    if(infini){
+                      fichier_out<<"<"<<setw(7);
+                    } else{
+                      fichier_out<<setw(8);
                     }
-                   } else{
+                    print_p(liptak, fichier_out, 6, true);
+                   } else {
                       fichier_out<<"Highly sign."<<endl;
                    } // if infini et pchi
                 }else{
@@ -1289,20 +1306,21 @@ bool affichIntermBool=false;
             } // next p
             if(ddl > 0){
               if (infini) {
-                fichier_out<<"All: Chi2< "<<fisher;
+                fichier_out<<"All: Chi2< ";
               } else {
-                fichier_out<<"All: Chi2= "<<fisher;
+                fichier_out<<"All: Chi2= ";
               }
+              print_p(fisher, fichier_out, 4, false);
               fichier_out<<" (df= "<<ddl<<")";
               chi2(pchi,ddl,float(fisher));
               fichier_out.precision(6);
                if(pchi != -1){
-                  fichier_out.precision(6);
-                 if((infini)){
-                   fichier_out<<", P-value< "<<pchi<<endl;
-                 }else{
-                   fichier_out<<", P-value= "<<pchi<<endl;
+                 if(infini){
+                   fichier_out<<", P-value< ";
+                 } else {
+                   fichier_out<<", P-value= ";
                  }
+                 print_p(pchi, fichier_out, 6, true);
                } else{
                   fichier_out<<", highly significant"<<endl;
                }
@@ -1332,12 +1350,13 @@ bool affichIntermBool=false;
                }else{
                  ntests+=1;
                  if(tabF[0][p] < numeric_limits<float>::epsilon()){
-                    liptak+=ndtri(numeric_limits<float>::epsilon());
+                   noR_cout<<"\nQuick patch in Z test for estimated p=0\n";
+                   liptak+=ndtri(numeric_limits<float>::epsilon());
                      infini = true;
                      // next p
                   }else if(tabF[0][p] == 1){
-                     noR_cout<<"\nbad quick patch in Z test\n";
-                     liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH
+                    noR_cout<<"\nQuick patch in Z test for estimated p=1\n";
+                    liptak+=ndtri(1.-1./(batchnbr*batchlgth)); //QUICK PATCH
                      // next p
                   }else{
                      liptak+=ndtri(tabF[0][p]);
@@ -1352,13 +1371,13 @@ bool affichIntermBool=false;
               }
               fichier_out<<" ("<<ntests<<" tests)";
               liptak=ndtr(liptak/sqrt(ntests));
-              fichier_out.precision(6);
               if(liptak != 0.0){
-                if((infini)){
-                  fichier_out<<", P-value< "<<liptak<<endl;
-                }else{
-                  fichier_out<<", P-value= "<<liptak<<endl;
+                if(infini){
+                  fichier_out<<", P-value< ";
+                } else{
+                  fichier_out<<", P-value= ";
                 }
+                print_p(liptak, fichier_out, 6, true);
               } else{
                 fichier_out<<"Highly sign."<<endl;
               } // if infini et pchi
@@ -1757,7 +1776,7 @@ using namespace NS_GP;
 //Fis
           if (SSgTotLoc[popit]+SSiTotLoc[popit]>0 && estimDiploidBool) {
              ios_base::fmtflags old=fichier_out.setf(ios_base::fixed,ios_base::floatfield);
-             fichier_out.precision(4); // appar il *faut* ?a pour activer la bonne combin... le precision() prec ne joue plus ?
+             fichier_out.precision(4); // appar il *faut* ca pour activer la bonne combin... le precision() prec ne joue plus ?
              fichier_out<<std::internal<<setw(7)<<(SSiTotLoc[popit] - SSgTotLoc[popit])/(SSiTotLoc[popit] + SSgTotLoc[popit]);
              fichier_out.setf(old,ios_base::floatfield); // necess pour SSD
              if (identitybool) fichier_out.precision(4); else fichier_out.precision(5);

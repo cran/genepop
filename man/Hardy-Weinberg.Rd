@@ -6,13 +6,28 @@
 \alias{HWtable_analysis}
 \title{Tests of Hardy-Weinberg genotypic proportions}
 \usage{
-test_HW(inputFile, which = "Proba", outputFile = "",
-  settingsFile = "", enumeration = FALSE, dememorization = 10000,
-  batches = 20, iterations = 5000, verbose = interactive())
+test_HW(
+  inputFile,
+  which = "Proba",
+  outputFile = "",
+  settingsFile = "",
+  enumeration = FALSE,
+  dememorization = 10000,
+  batches = 20,
+  iterations = 5000,
+  verbose = interactive()
+)
 
-HWtable_analysis(inputFile, which = "Proba", settingsFile = "",
-  enumeration = FALSE, dememorization = 10000, batches = 20,
-  iterations = 5000, verbose = interactive())
+HWtable_analysis(
+  inputFile,
+  which = "Proba",
+  settingsFile = "",
+  enumeration = FALSE,
+  dememorization = 10000,
+  batches = 20,
+  iterations = 5000,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{character: The path of the input file. For \code{test_HW}, this file should be in Genepop format. For \code{HWtable_analysis}, it should be in ad hoc format illustrated by sample file \code{Rhesus.txt} used in the Examples section, and further detailed in \href{../doc/all-menu-options.html#analyzing-a-single-genotypic-matrix}{this section} of the Genepop-executable documentation.}

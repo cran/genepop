@@ -5,12 +5,21 @@
 \alias{ibd}
 \title{Isolation by distance}
 \usage{
-ibd(inputFile, outputFile = "", settingsFile = "",
-  dataType = "Diploid", statistic = "F/(1-F)",
-  geographicScale = "2D", CIcoverage = 0.95, testPoint = 0,
-  minimalDistance = 1e-04, maximalDistance = 1e+09,
-  mantelPermutations = 1000, mantelRankTest = FALSE,
-  verbose = interactive())
+ibd(
+  inputFile,
+  outputFile = "",
+  settingsFile = "",
+  dataType = "Diploid",
+  statistic = "F/(1-F)",
+  geographicScale = "2D",
+  CIcoverage = 0.95,
+  testPoint = 0,
+  minimalDistance = 1e-04,
+  maximalDistance = 1e+09,
+  mantelPermutations = 1000,
+  mantelRankTest = FALSE,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

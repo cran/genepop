@@ -457,32 +457,33 @@ nulls <- function(inputFile, outputFile = "", settingsFile = "", nullAlleleMetho
     .returnInfo(resu, verbose = verbose)
 }
 
-#' @rdname manipulation
+#' @name manipulation
 #' @title Various data manipulation utilities
 #' @description Various procedures described in the linked sections of the Genepop executable documentation: \href{../doc/all-menu-options.html#sub-option-2-diploidisation-of-haploid-data}{diploidize} haploid data, \href{../doc/all-menu-options.html#sub-option-3-relabeling-alleles-names}{relabel_alleles}, \href{../doc/all-menu-options.html#sub-option-6-random-sampling-of-haploid-genotypes-from-diploid-ones}{sample_haploid}, and \href{../doc/all-menu-options.html#sub-options-4-and-5-conversion-of-population-data-to-individual-data}{pop_to_indiv}. The latter procedure converts population samples (several individuals in each population) to individual data. The names given to the individuals in the new file created (names which are to be interpreted as coordinates in a spatial analysis) may be the population coordinates (given as the name of the last individual in the original data file), or each individual's coordinates (given as the name of each individual in the original data file).
 #' @param inputFile The path of the input file, in Genepop format
 #' @param outputFile character: The path of the output file
-#' @param coordinates Either \code{'population'} (use population coordinates) or anything else (use individual coordinates).
+#' @param coordinates character: either \code{'population'} (to use population coordinates) or any other charater string (to use individual coordinates).
 #' @param verbose logical: whether to print some information
+NULL
+
+#' @rdname manipulation
 #' @examples locinfile <- genepopExample('sample.txt')
 #' outfile <- diploidize(inputFile = locinfile,outputFile="Dsample.txt")
 #' if ( ! interactive()) clean_workdir(c("sample.txt", "Dsample.txt"))
-
 diploidize <- function(inputFile, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   resu <- RDiploidisationHaploidData(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 
-#' @name manipulation
+#' @rdname manipulation
 relabel_alleles <- function(inputFile, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   resu <- RRelabelingAlleles(inputFile, outputFile)
     .returnInfo(resu, verbose = verbose)
 }
 
-#' @name manipulation
-#' @name pop_to_indiv
+#' @rdname manipulation
 pop_to_indiv <- function(inputFile, coordinates, outputFile = "", verbose = interactive()) {
   .check_gp_file_name(inputFile)
   if (coordinates == "population") {

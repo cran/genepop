@@ -4,8 +4,12 @@
 \alias{Nm_private}
 \title{Private allele method}
 \usage{
-Nm_private(inputFile, outputFile = "", dataType = "Diploid",
-  verbose = interactive())
+Nm_private(
+  inputFile,
+  outputFile = "",
+  dataType = "Diploid",
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

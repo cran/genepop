@@ -4,8 +4,14 @@
 \alias{nulls}
 \title{Estimation of allele frequencies under genotyping failure.}
 \usage{
-nulls(inputFile, outputFile = "", settingsFile = "",
-  nullAlleleMethod = "", CIcoverage = 0.95, verbose = interactive())
+nulls(
+  inputFile,
+  outputFile = "",
+  settingsFile = "",
+  nullAlleleMethod = "",
+  CIcoverage = 0.95,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

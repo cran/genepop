@@ -5,9 +5,17 @@
 \alias{test_diff}
 \title{Tests of genic and genotypic differentiation}
 \usage{
-test_diff(inputFile, genic = TRUE, pairs = FALSE, outputFile = "",
-  settingsFile = "", dememorization = 10000, batches = 100,
-  iterations = 5000, verbose = interactive())
+test_diff(
+  inputFile,
+  genic = TRUE,
+  pairs = FALSE,
+  outputFile = "",
+  settingsFile = "",
+  dememorization = 10000,
+  batches = 100,
+  iterations = 5000,
+  verbose = interactive()
+)
 }
 \arguments{
 \item{inputFile}{The path of the input file, in Genepop format}

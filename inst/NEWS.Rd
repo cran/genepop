@@ -3,6 +3,13 @@
 \encoding{UTF-8}
 % cf ?news for the format and usage of this file
 %
+\section{CHANGES UP TO VERSION 1.1.4}{
+\subsection{CORRECTED BUGS}{
+\itemize{
+\item Incorrect final table of multi-locus tests of pairwise differentiation [test_diff(...,pairs = TRUE)] particularly in cases where all individual tests had p-value estimates equal to 0 (per-locus per-pair tests were correctly reported). Several minor display glitches in similar tables have also been fixed (as a result, scientific format for numbers may now appear in such outputs).
+}
+}
+}
 \section{CHANGES UP TO VERSION 1.1.3}{
 \subsection{NEW FEATURES}{
 \itemize{
