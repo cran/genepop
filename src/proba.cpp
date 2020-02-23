@@ -187,28 +187,92 @@ double zxx, tt, qxx;
 
 
 //------------------------------------------------------------------------------
-//----------------------------- Fonction chi2() --------------------------------
+//---------- chi2 code using algos form Numerical recipes 3rd ed. --------------
 //------------------------------------------------------------------------------
-void chi2 (float &pchi, float nu, float chi){
 
-float mm, sum;
-int j, i, cc;
-
-    if (nu > 100) grosDDL(nu, chi, pchi); //Lance la fonction grosDDL()
-    else {
-        if (chi > 200) pchi = -1;
-        else {
-
-            cc = int(nu) / 2;
-            mm = chi / 2;
-            sum = 1;
-            for (j = 1; j <= cc - 1; j++) {
-
-                i = cc - j;
-                sum = sum * mm / float(i) + 1;
-            }
-            pchi = exp(-mm) * sum;
-        }
-    }
-
+/*-----------ln(gamma(xx))----------------------------*/
+double gammln(double xx) {
+  double x,tmp,y,ser;
+  static const double cof[14]={57.1562356658629235,-59.5979603554754912,
+                               14.1360979747417471,-0.491913816097620199,.339946499848118887e-4,
+                                 .465236289270485756e-4,-.983744753048795646e-4,.158088703224912494e-3,
+                               -.210264441724104883e-3,.217439618115212643e-3,-.164318106536763890e-3,
+                                .844182239838527433e-4,-.261908384015814087e-4,.368991826595316234e-5};
+  
+  y=x=xx;
+  tmp = x+5.24218750000000000; //Rational 671/128.
+  tmp = (x+0.5)*log(tmp)-tmp;
+  ser = 0.999999999999997092;
+  for (int j=0;j<14;j++) ser += cof[j]/++y;
+  return tmp+log(2.5066282746310005*ser/x);
 }
+/*-----------------------------------------------------------------------------*/
+
+double gser(const double a, const double x) {
+  const double EPS = numeric_limits<double>::epsilon();
+  double sum,del,ap;
+  double gln=gammln(a);
+  ap=a;
+  del=sum=1.0/a;
+  for (;;) {
+    ++ap;
+    del *= x/ap;
+    sum += del;
+    if (fabs(del) < fabs(sum)*EPS) {
+      return sum*exp(-x+a*log(x)-gln);
+    }
+  }
+}
+
+double gcf(const double a, const double x) {
+  const double EPS = numeric_limits<double>::epsilon();
+  const double FPMIN = numeric_limits<double>::min()/EPS;
+  double an,b,c,d,del,h;
+  double gln=gammln(a);
+  b=x+1.0-a; 
+  c=1.0/FPMIN;
+  d=1.0/b;
+  h=d;
+  for (int i=1;;i++) { 
+    an = -i*(i-a);
+    b += 2.0;
+    d=an*d+b;
+      if (fabs(d) < FPMIN) d=FPMIN;
+      c=b+an/c;
+      if (fabs(c) < FPMIN) c=FPMIN;
+      d=1.0/d;
+      del=d*c;
+      h *= del;
+      if (fabs(del-1.0) <= EPS) break;
+  }
+  return exp(-x+a*log(x)-gln)*h; 
+}
+
+void chi2(float &pchi, float nu, float chi) {
+  if (chi == 0.0) pchi= 1.0;
+  else if (nu >= 100) grosDDL(nu, chi, pchi);
+  else if (chi < nu+1.0) pchi= 1.0-gser(0.5*nu,0.5*chi); // Use the series representation.
+  else pchi= gcf(0.5*nu,0.5*chi); // Use the continued fraction representation.
+}
+
+// legacy version of chi2(), of uncertain origin (tracing back to first BASIC implementation?)
+void old_chi2 (float &pchi, float nu, float chi){
+  float mm, sum;
+  int j, i, cc;
+  if (nu > 100) grosDDL(nu, chi, pchi); //Lance la fonction grosDDL()
+  else {
+    if (chi > 200) pchi = -1;
+    else {
+      cc = int(nu) / 2;
+      mm = chi / 2;
+      sum = 1;
+      for (j = 1; j <= cc - 1; j++) {
+        i = cc - j;
+        sum = sum * mm / float(i) + 1;
+      }
+      pchi = exp(-mm) * sum;
+    }
+  }
+}
+
+

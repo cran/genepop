@@ -969,7 +969,7 @@ Following @Slatkin95, statistics based on allele size have been widely used. The
 
 ### Robertson and Hill’s estimator of $F_\mathrm{IS}$
 
-This estimator, reported in options 1 and 5, was designed to have lower variance than the ANOVA estimator and no small-sample bias when $F_\mathrm{IS}$ is low, assuming that devaitions from Hardy-Weinberg proportions are characterized by the same $F_\mathrm{IS}$ for all pairs of alleles  [@RobertsonH84].\index{\Fis!@Robertson \&\ Hill's estimator of \Fis} The score test computed in heterozygote excess and deficiency sub-options of option 1 is equivalent to this estimator for testing purposes.
+This estimator, reported in options 1 and 5, was designed to have lower variance than the ANOVA estimator and no small-sample bias when $F_\mathrm{IS}$ is low, assuming that deviations from Hardy-Weinberg proportions are characterized by the same $F_\mathrm{IS}$ for all pairs of alleles  [@RobertsonH84].\index{\Fis!@Robertson \&\ Hill's estimator of \Fis} The score test computed in heterozygote excess and deficiency sub-options of option 1 is equivalent to this estimator for testing purposes.
 
 Bootstraps
 ----------

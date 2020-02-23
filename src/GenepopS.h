@@ -111,7 +111,7 @@ void initialize_for_R();
 void clean(bool fich_genepop=true);
 void reinitializeGenepopS();
 void cleanGenepopS();
-
+int print_p(double pchi, std::ostream& fichier_out, int prec, bool endline);
 
 std::vector<double> estimNullLocPop(const size_t iLoc,const size_t iPop,const bool printBool,
                                     std::map<ssize_t,double>& genocopy, // copy locale en <double> de la map de popGenos;

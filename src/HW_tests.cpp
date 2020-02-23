@@ -56,7 +56,7 @@ et la lecture des fichiers P_L
 #endif
 #include "MersenneTwister.h"
 #include "proba.h"
-#include "GenepopS.h" //set_MC... au moins
+#include "GenepopS.h" //set_MC, print_p... au moins
 #include "genepop.h"
 #include "settings.h"
 #include "HW_tests.h"
@@ -1765,12 +1765,13 @@ void fic_lect(){
 //------------------------------------------------------------------------------
 //------------------------ Fonction analyse_pop() ------------------------------
 //------------------------------------------------------------------------------
-void analyse_pop(float &chiHW, float &ddlHW, int &HWinfini, int &HinfINFINI, float &pchi, float &nu, float &chi,string hw_outfile);
-void analyse_pop(float &chiHW, float &ddlHW, int &HWinfini, int &HinfINFINI, float &pchi, float &nu, float &chi,string hw_outfile){
+void analyse_pop(float &chiHW, long int &ddlHW, int &HWinfini, int &HinfINFINI, float &pchi, float &nu, float &chi,string hw_outfile);
+void analyse_pop(float &chiHW, long int &ddlHW, int &HWinfini, int &HinfINFINI, float &pchi, float &nu, float &chi,string hw_outfile){
 using namespace NS_HW;
 using namespace NS_HW4;
 
-float ddlHWT, HWTOT;
+long int ddlHWT;
+float HWTOT;
 int HWinfiniT;
 ofstream outfile;
 outfile.open(hw_outfile.c_str(),ios::app);
@@ -1806,62 +1807,15 @@ outfile.open(hw_outfile.c_str(),ios::app);
         for (size_t i = 0; i < nb_locus; i++){
             if (fichier_genepop->coding[i]>3) {
                 outfile<<"\n"<<left<<setw(11)<<fichier_genepop->loci[i]->locusName.substr(0,10)<<" ";
-/*                if (false) ; //(proba[j][i][0] <= numeric_limits<float>::epsilon()) outfile<<" - "; //!!!
-                else {
-
-                    if (proba[j][i][0] == 9) { //signal P value pas distinguable de 0 en enum complete
-
-                        outfile<<"0.0000  ";
-                        ddlHW += 2;
-                        HWinfini = 1;
-                    }
-                    else {
-
-                        if (proba[j][i][0] > 0.9999) {
-
-                            outfile<<"1       ";
-                            ddlHW += 2;
-                        }
-                        else {
-
-                            outfile<<left<<setw(7)<<proba[j][i][0]<<" ";
-                            chiHW -= 2 * log(proba[j][i][0]);
-                            ddlHW += 2;
-                            ddlHWT += 2;
-                        }
-                    }
-
-                    //SE HW
-                    if (proba[j][i][1] <= numeric_limits<float>::epsilon()) outfile<<"  -     ";
-                    else {
-
-                        if (proba[j][i][1] == 9) outfile<<"0.0000  ";
-                        else {
-
-                            outfile<<left<<setw(7)<<proba[j][i][1]<<" ";
-                        }
-                    }
-
-                    //W&C
-                    outfile<<internal<<setw(7)<<proba[j][i][2]<<" ";
-                    //F de R&Hill
-                    outfile<<internal<<setw(7)<<proba[j][i][4]<<" ";
-                    //nombre de matrices si enumeration complete
-                    if (proba[j][i][3] <= numeric_limits<float>::epsilon()) outfile<<"   -";
-                    else {
-
-                        outfile<<setw(6)<<int(proba[j][i][3]+0.5);
-                    }
-                }
-*/
-                if (proba[j][i][3]>-0.5) { // test effectu�
+                if (proba[j][i][3]>-0.5) { // test done
                     outfile<<left<<setw(7)<<proba[j][i][0]<<" ";
                     ddlHW += 2;
-                    if (proba[j][i][0] <= numeric_limits<float>::epsilon())
+                    ddlHWT += 2;
+                    if (proba[j][i][0] <= numeric_limits<float>::epsilon()) {
+                      chiHW+=2.*log(batchnbr*batchlgth); // i.e. *-=* 2 log(bound on freq)
                         HWinfini = 1;
-                    else {
+                    } else {
                             chiHW -= 2 * log(proba[j][i][0]);
-                            ddlHWT += 2;
                     }
 
                     if (proba[j][i][1]>-numeric_limits<float>::epsilon()) // indic PAS enum complete (moins...)
@@ -1886,14 +1840,9 @@ outfile.open(hw_outfile.c_str(),ios::app);
         if (probtestbool){
 
             if (nb_locus != 1 && ddlHW > 2) {
-
                 outfile<<"\n\nAll (Fisher's method):";
-
                 if (HWinfini == 1) HWinfiniT = 1;
-                else {
-                    HWTOT += chiHW;
-                }
-
+                HWTOT += chiHW;
                 outfile<<"\n Chi2 :    ";
 
                 if (HWinfini == 1) outfile<<" > ";
@@ -1902,14 +1851,14 @@ outfile.open(hw_outfile.c_str(),ios::app);
                 outfile<<"\n Prob :    ";
                 nu = ddlHW;
                 chi = chiHW;
-                chi2(pchi, nu, chi);  //Lance la fonction chi2()
+                chi2(pchi, nu, chi); 
                 
-                if (pchi == -1) outfile<<"High. sign.";
+                if (pchi == -1) outfile<<"High. sign."; // should not ocur with the new chi2() code
                 else {
                   if (pchi > 0.9999) outfile<<"1";
                   else {
                     if (HWinfini == 1) outfile<<" < ";  
-                    outfile<<pchi;
+                    print_p(pchi,outfile, 6, false) ;
                   }
                 }
                 
@@ -1934,14 +1883,14 @@ outfile.open(hw_outfile.c_str(),ios::app);
             outfile<<"\n Prob :    ";
             nu = ddlHWT;
             chi = HWTOT;
-            chi2(pchi, nu, chi);  //Lance la fonction chi2()
+            chi2(pchi, nu, chi);  
             
-            if (pchi == -1) outfile<<"High. sign.";
+            if (pchi == -1) outfile<<"High. sign.";  // should not ocur with the new chi2() code
             else {
               if (pchi > 0.9999) outfile<<"1";
               else {
                 if (HWinfiniT == 1) outfile<<" < ";
-                outfile<<pchi;
+                print_p(pchi,outfile, 6, false) ;
               }
             }
         }
@@ -1974,7 +1923,8 @@ using namespace NS_HW;
 using namespace NS_HW4;
 
 int HWinfini=0, HinfINFINI;
-float chiHW=0.0, ddlHW=0.0, nu, chi, pchi;
+long int ddlHW=0;
+float chiHW=0.0, nu, chi, pchi;
 ofstream outfile;
     outfile.open(hw_outfile.c_str(),ios::app);
     if  (!outfile.is_open()){
@@ -2008,8 +1958,8 @@ ofstream outfile;
             if (fichier_genepop->coding[i]>3) {
 
                 HWinfini = 0; HinfINFINI = 0;
-                outfile<<"\n\nLocus \""<<fichier_genepop->loci[i]->locusName;
-                outfile<<"\"\n"<<"-----------------------------------------";
+                outfile<<"\n\nLocus \""<<fichier_genepop->loci[i]->locusName<<"\"\n";
+                outfile<<"-----------------------------------------";
                 outfile<<"\n                             Fis estimates";
                 outfile<<"\n                            ---------------";
                 outfile<<"\nPOP         P-val   S.E.    W&C     R&H     Steps ";
@@ -2017,62 +1967,9 @@ ofstream outfile;
                 chiHW = 0; ddlHW = 0;
                 outfile.setf(ios_base::fixed,ios_base::floatfield);
 
-
                 for (size_t j = 0; j < nb_sam; j++){
-
-                    outfile<<"\n"<<left<<setw(11)<<fichier_genepop->pops[j]->popName().substr(0,10).c_str()<<" ";
-/*                    if (false) ; //(proba[j][i][0] <= numeric_limits<float>::epsilon()) outfile<<" -      ";
-                    else {
-
-                        if (proba[j][i][0] == 9){
-
-                            outfile<<"0.0000  ";
-                            ddlHW += 2;
-                            HWinfini = 1;
-                        }
-                        else {
-
-                            if (proba[j][i][0] > 0.9999){
-
-                                outfile<<"1       ";
-                                ddlHW += 2;
-                            }
-                            else {
-
-                                outfile<<left<<setw(7)<<proba[j][i][0]<<" ";
-                                chiHW -= 2*log(proba[j][i][0]);
-                                ddlHW += 2;
-                            }
-                        }
-
-                        //SE HW
-                        if (proba[j][i][1] <= numeric_limits<float>::epsilon()) outfile<<"  -     ";
-                        else {
-
-                            if (proba[j][i][1] == 9) outfile<<".0000   ";
-                            else {
-
-                                outfile<<left<<setw(7)<<proba[j][i][1]<<" ";
-                            }
-                        }
-
-                        //W&C
-                        outfile<<internal<<setw(7)<<proba[j][i][2]<<" ";
-
-                        //F R&Hill
-                        outfile<<internal<<setw(7)<<proba[j][i][4]<<" ";
-
-                        //nombre de matrices si enumeration complete
-                        if (proba[j][i][3] <= numeric_limits<float>::epsilon()) outfile<<"   -";
-                        else {
-
-                            outfile<<setw(6)<<int(proba[j][i][3]+0.5);
-                        }
-
-                    }
-
-*/
-                    if (proba[j][i][3]>-0.5) { // test effectu�
+                    outfile<<"\n"<<left<<setw(11)<<fichier_genepop->pops[j]->popName().substr(0,10)<<" ";
+                    if (proba[j][i][3]>-0.5) { // test done
                         outfile<<left<<setw(7)<<proba[j][i][0]<<" ";
                         ddlHW += 2;
                         if (proba[j][i][0] <= numeric_limits<float>::epsilon()) {
@@ -2114,12 +2011,12 @@ ofstream outfile;
                 outfile<<"\n Prob :    ";
                 nu = ddlHW; chi = chiHW;
                 chi2(pchi, nu, chi);  //Lance la fonction chi2()
-                if (pchi == -1) outfile<<"High. sign.";
+                if (pchi == -1) outfile<<"High. sign.";  // should not ocur with the new chi2() code
                 else {
                   if (pchi > 0.9999) outfile<<"1";
                   else{
                     if (HWinfini == 1) outfile<<" < ";
-                    outfile<<pchi;
+                    print_p(pchi,outfile, 6, false) ;
                   }
                 }
             }

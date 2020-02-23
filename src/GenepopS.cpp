@@ -88,7 +88,7 @@ using namespace std;
 //string version=" v4.0 (Built on "+datestring+" at "+timestring+").";
 //string version="4.6";
 std::string getSetting(const std::string which) {
-  const std::string version="4.7.3"; // the O N L Y place to story this info.
+  const std::string version="4.7.5"; // the O N L Y place to story this info.
   if (which.compare("version")==0) return(version);
   if (which.compare("default_settingsfile")==0) return("genepop.txt");
   return("unknown 'which' value");
@@ -619,17 +619,18 @@ if (!glob) enum_test_et_affich(exacName);  //enumeration tests plus affichages d
 return 0;
 }
 
-int print_p(double pchi, ostream& fichier_out, int prec, bool endline);
 int print_p(double pchi, ostream& fichier_out, int prec, bool endline) {
+  streamsize old_prec; 
   if (pchi<1e-04) { 
-    fichier_out.precision(2);
+    old_prec = fichier_out.precision(2);
     fichier_out<<scientific<<pchi<<fixed;
-    fichier_out.precision(prec);
+    fichier_out.precision(old_prec);
   } else {
-    fichier_out.precision(prec);
+    old_prec = fichier_out.precision(prec);
     fichier_out<<fixed<<pchi;
   }
   if (endline) fichier_out<<endl;
+  fichier_out.precision(old_prec);
   return(0);
 }
 

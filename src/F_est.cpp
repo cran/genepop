@@ -771,7 +771,7 @@ void calc_sfreqs_Nc(int Indic,vector<double>& tailleMoy,
 // indic=0 => F total table
 using namespace NS_F_est;
 using namespace NS_tailles;
-    indic12all=Indic; //copie dans varaiable membre de NS_F_est
+    indic12all=Indic; //copie dans variable membre de NS_F_est
     double moy;
     size_t *tabMind=NULL;
     size_t tabMindj;

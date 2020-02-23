@@ -380,6 +380,14 @@ void rtrim(string *s) {
 	}
 }
 
+// removes rhs tabs 
+std::string rtabtrim(std::string s) {
+  while ((s.length()>0)  && (s.substr(s.length()-1,1)) == "\t") {
+    s.erase(s.length()-1,s.length());
+  }
+  return(s);
+}
+
 string ordonne(string geno);
 string ordonne(string geno) {// ordonne les genotypes diploides (STRING->STRING)
 //int typ = atoi(geno.c_str());
@@ -615,7 +623,7 @@ int CTypage::maxAllele(){return(gene1 > gene2 ? gene1 : gene2);}
 
 // constructeur
 CIndividual::CIndividual(string indName, size_t nbLoc){
-	_indName = indName;
+	_indName = rtabtrim(indName); // remove tabs from indName (=> popName) as they break setw() effectiveness.
 	_typages.reserve(nbLoc);
 }
 

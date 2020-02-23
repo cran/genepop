@@ -3,6 +3,13 @@
 \encoding{UTF-8}
 % cf ?news for the format and usage of this file
 %
+\section{CHANGES UP TO VERSION 1.1.7}{
+\subsection{CORRECTED BUGS}{
+\itemize{
+\item Incorrect tables of multi-locus and multi 'pop' tests of Hardy-Weinberg [test_HW() which default which="Proba"] when some individual tests had p-value estimates equal to 0, similar to the problem fixed in version 1.1.4 for differentiation tests. Per-locus per-pair-of-'pop' tests were correctly reported. More display glitches fixed in this and other options.
+}
+}
+}
 \section{CHANGES UP TO VERSION 1.1.4}{
 \subsection{CORRECTED BUGS}{
 \itemize{
