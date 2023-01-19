@@ -138,9 +138,12 @@ HWtable_analysis <- function(inputFile, which = "Proba", settingsFile = "", enum
 #' @param iterations integer: Iterations per batch
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
-#' @examples locinfile <- genepopExample('sample.txt')
+#' @examples 
+#' \dontrun{ # 'dontrun' only because a bit too slow for CRAN checks
+#' locinfile <- genepopExample('sample.txt')
 #' test_LD(locinfile,'sample.txt.DIS')
 #' if ( ! interactive()) clean_workdir(otherfiles='sample.txt')
+#' }
 test_LD <- function(inputFile, outputFile = "", settingsFile = "", dememorization = 10000, batches = 100, iterations = 5000, 
     verbose = interactive()) {
   .check_gp_file_name(inputFile)
@@ -354,6 +357,10 @@ Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataTy
 #' @param maximalDistance numeric: The maximal geographic distance
 #' @param mantelPermutations numeric: The number of permutations may be specified
 #' @param mantelRankTest logical: whether to use ranks in the Mantel test
+#' @param bootstrapMethod character: which bootstrap method to use (one of 
+#'   "ABC", "BC" or "BCa"). 
+#' @param bootstrapNsim integer: the number of bootstrap simulations to use 
+#'   (has no effect if method is "ABC"). 
 #' @param verbose logical: whether to print some information
 #' @return The path of the output file is returned invisibly.
 #' @examples
@@ -361,17 +368,24 @@ Fst <- function(inputFile, sizes = FALSE, pairs = FALSE, outputFile = "", dataTy
 #' locinfile <- genepopExample('w2.txt')
 #' outfile <- ibd(locinfile,'w2.txt.ISO', geographicScale = 'Log', statistic='e')
 #' if ( ! interactive()) clean_workdir(otherfiles='w2.txt')
-#'
+#' 
 #' locinfile <- genepopExample('PEL1600withCoord.txt')
 #' outfile <- ibd(locinfile,'PEL1600withCoord.ISO', statistic = 'SingleGeneDiv',
 #'                geographicScale = '1D')
 #' if ( ! interactive()) clean_workdir(otherfiles='PEL1600withCoord.txt')
 #' }
-ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diploid", statistic = "F/(1-F)", geographicScale = "2D", 
-    CIcoverage = 0.95, testPoint = 0, minimalDistance = 1e-04, maximalDistance = 1e+09, mantelPermutations = 1000, mantelRankTest = FALSE, 
-    verbose = interactive()) {
+ibd <- function(inputFile, outputFile = "", settingsFile = "", 
+                dataType = "Diploid", statistic = "F/(1-F)", 
+                geographicScale = "2D", CIcoverage = 0.95, testPoint = 0,
+                minimalDistance = 1e-04, maximalDistance = 1e+09, 
+                mantelPermutations = 1000, mantelRankTest = FALSE, 
+                bootstrapMethod = "ABC", 
+                bootstrapNsim = 999, 
+                verbose = interactive()) {
     mc <- match.call()
     .check_gp_file_name(inputFile)
+    .check_bootstrap_args(bootstrapMethod, bootstrapNsim)
+    
     if (statistic %in% c("a", "e", "a-like")) {
         mc[[1L]] <- quote(.GIsolationByDistanceBetweenIndividuals)
         if (statistic == "a-like") 
@@ -385,13 +399,22 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
 }
 
 .GIsolationByDistanceBetweenGroups <- function(inputFile, outputFile = "", settingsFile = "",
-                                              dataType = "Diploid", statistic = "SingleGeneDiv",
-                                              geographicScale = "2D", CIcoverage = 0.95,
-                                              testPoint=0, minimalDistance=1e-4,
-                                              maximalDistance=1e+09, mantelPermutations=1000,
-                                              mantelRankTest=FALSE, verbose = interactive()) {
+                                               dataType = "Diploid", statistic = "SingleGeneDiv",
+                                               geographicScale = "2D", CIcoverage = 0.95,
+                                               testPoint=0, minimalDistance=1e-4,
+                                               maximalDistance=1e+09, mantelPermutations=1000,
+                                               mantelRankTest=FALSE, 
+                                               bootstrapMethod = "ABC", 
+                                               bootstrapNsim = 999, 
+                                               verbose = interactive()) {
   if(settingsFile == "") {
-    resu <- RIsolationByDistanceBetweenGroups(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest)
+    resu <- RIsolationByDistanceBetweenGroups(inputFile, outputFile, dataType, 
+                                              statistic, geographicScale, 
+                                              CIcoverage, testPoint, 
+                                              minimalDistance, maximalDistance, 
+                                              mantelPermutations, 
+                                              mantelRankTest, bootstrapMethod, 
+                                              bootstrapNsim)
   } else {
     resu <- RIsolationByDistanceBetweenGroupsWithSettingsFile(inputFile, outputFile, settingsFile)
   }
@@ -399,12 +422,16 @@ ibd <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diplo
 }
 
 
-.GIsolationByDistanceBetweenIndividuals <- function(inputFile, outputFile = "", settingsFile = "", dataType = "Diploid", statistic = "e", 
-    geographicScale = "2D", CIcoverage = 0.95, testPoint = 0, minimalDistance = 1e-04, maximalDistance = 1e+09, mantelPermutations = 1000, 
-    mantelRankTest = FALSE, verbose = interactive()) {
+.GIsolationByDistanceBetweenIndividuals <- function(inputFile, 
+    outputFile = "", settingsFile = "", dataType = "Diploid", statistic = "e", 
+    geographicScale = "2D", CIcoverage = 0.95, testPoint = 0, minimalDistance = 1e-04,
+    maximalDistance = 1e+09, mantelPermutations = 1000, mantelRankTest = FALSE, 
+    bootstrapMethod = "ABC", bootstrapNsim = 999, 
+    verbose = interactive()) {
+    
     if (settingsFile == "") {
         resu <- RIsolationByDistanceBetweenIndividuals(inputFile, outputFile, dataType, 
-            statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest)
+            statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim)
     } else {
         resu <- RIsolationByDistanceBetweenIndividualsWithSettingsFile(inputFile, outputFile, 
             settingsFile)
@@ -550,4 +577,15 @@ genepopExample <- function(filename) {
   check <- file.copy(infile,locinfile,overwrite=TRUE)
   if ( ! check) stop("The file could not be copied into the user's directory.")
   return(filename)
+}
+
+.check_bootstrap_args <- function(method, nsim) { 
+  allmethods <- c("ABC", "BC", "BCa")
+  if ( ! method %in% allmethods ) { 
+    stop("Unknown bootstrap method: ", method, 
+         " (it must be one of ", paste(allmethods, collapse = ", "), ")")
+  } 
+  if ( ! (is.finite(nsim) && nsim > 0) ) { 
+    stop("The number of bootstrap simulations must be a positive integer")
+  }
 }

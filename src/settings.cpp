@@ -540,14 +540,22 @@ but no new value is read -> the last value is duplicated */
         			string locstring;
         			stringstream strstr(buf.substr(pos+1));
         			strstr>>locstring;
-        			// Mode was introduced on 10/12/2011 and is not (yet) systematically used
-        			if((cmp_nocase(locstring,"Batch")==0)) {Mode="Batch";pauseGP=false;alwaysAskBool=false;cinGetOnError=false;}
+        			if((cmp_nocase(locstring,"Batch2File")==0)) { 
+        			  Mode="Batch2File";pauseGP=false;alwaysAskBool=false;cinGetOnError=false;use_console_xy=false;
+        			}
+        			if((cmp_nocase(locstring,"Batch")==0)) {
+        			  Mode="Batch";pauseGP=false;alwaysAskBool=false;cinGetOnError=false;use_console_xy=true;
+        			}
         			if((cmp_nocase(locstring,"BatchDebug")==0) || (cmp_nocase(locstring,"PauseOnError")==0)) {
-        			    Mode="BatchDebug";pauseGP=false;alwaysAskBool=false;cinGetOnError=true;
-                    } //private
-        			if((cmp_nocase(locstring,"Ask")==0)) {Mode="Ask";pauseGP=true;alwaysAskBool=true;cinGetOnError=true;}
+        			  Mode="BatchDebug";pauseGP=false;alwaysAskBool=false;cinGetOnError=true;use_console_xy=true;
+        			} //private
+        			if((cmp_nocase(locstring,"Ask")==0)) {
+        			  Mode="Ask";pauseGP=true;alwaysAskBool=true;cinGetOnError=true;use_console_xy=true;
+        			}
         // else defaults are alwaysAskBool = false mais pauseGP =true
-        			if((cmp_nocase(locstring,"Default")==0)) {Mode="Default";pauseGP=true;alwaysAskBool=false;cinGetOnError=true;}
+        			if((cmp_nocase(locstring,"Default")==0)) {
+        			  Mode="Default";pauseGP=true;alwaysAskBool=false;cinGetOnError=true;use_console_xy=true;
+        			}
         			goto nextline;
         		}
         		if(cmp_nocase(var,"IsolBDstatistic")==0 || cmp_nocase(var,"IsolationStatistic")==0) {
@@ -573,6 +581,22 @@ but no new value is read -> the last value is duplicated */
         			stringstream strstr(buf.substr(pos+1));
         			strstr>>widthCI;
         			goto nextline;
+        		}
+        		if(cmp_nocase(var,"BootstrapMethod")==0) { 
+        		  string locstring;
+        		  stringstream strstr(buf.substr(pos+1));
+        		  strstr>>locstring;
+        		  if (cmp_nocase(locstring,"BC")==0) {
+        		    bootmethod=BOOT_METHOD_BC;
+        		  } else if (cmp_nocase(locstring,"BCa")==0) {
+        		    bootmethod=BOOT_METHOD_BCA;
+        		  } else bootmethod=BOOT_METHOD_ABC;
+        		  goto nextline;
+        		}
+        		if(cmp_nocase(var,"BootstrapNsim")==0) { 
+        			stringstream strstr(buf.substr(pos+1));
+        			strstr>>nboot;
+              goto nextline;
         		}
         		if(cmp_nocase(var,"Performance")==0) {
         			explicitPerf=false;
@@ -664,6 +688,9 @@ void initializeSetting() {
   //Mode="Default";
   typeindex1 = 0;
   typeindex2 = 0;
+  // Default bootstrap method
+  bootmethod = BOOT_METHOD_ABC; 
+  nboot = 999; 
   testPointslope=numeric_limits<double>::quiet_NaN();
 }
 

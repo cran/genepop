@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // getVersion
 std::string getVersion();
 RcppExport SEXP _genepop_getVersion() {
@@ -460,8 +465,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // RIsolationByDistanceBetweenIndividuals
-std::string RIsolationByDistanceBetweenIndividuals(std::string inputFile, std::string outputFile, std::string dataType, std::string statistic, std::string geographicScale, double CIcoverage, double testPoint, double minimalDistance, double maximalDistance, int mantelPermutations, bool mantelRankTest);
-RcppExport SEXP _genepop_RIsolationByDistanceBetweenIndividuals(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP dataTypeSEXP, SEXP statisticSEXP, SEXP geographicScaleSEXP, SEXP CIcoverageSEXP, SEXP testPointSEXP, SEXP minimalDistanceSEXP, SEXP maximalDistanceSEXP, SEXP mantelPermutationsSEXP, SEXP mantelRankTestSEXP) {
+std::string RIsolationByDistanceBetweenIndividuals(std::string inputFile, std::string outputFile, std::string dataType, std::string statistic, std::string geographicScale, double CIcoverage, double testPoint, double minimalDistance, double maximalDistance, int mantelPermutations, bool mantelRankTest, std::string bootstrapMethod, int bootstrapNsim);
+RcppExport SEXP _genepop_RIsolationByDistanceBetweenIndividuals(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP dataTypeSEXP, SEXP statisticSEXP, SEXP geographicScaleSEXP, SEXP CIcoverageSEXP, SEXP testPointSEXP, SEXP minimalDistanceSEXP, SEXP maximalDistanceSEXP, SEXP mantelPermutationsSEXP, SEXP mantelRankTestSEXP, SEXP bootstrapMethodSEXP, SEXP bootstrapNsimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -476,13 +481,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type maximalDistance(maximalDistanceSEXP);
     Rcpp::traits::input_parameter< int >::type mantelPermutations(mantelPermutationsSEXP);
     Rcpp::traits::input_parameter< bool >::type mantelRankTest(mantelRankTestSEXP);
-    rcpp_result_gen = Rcpp::wrap(RIsolationByDistanceBetweenIndividuals(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest));
+    Rcpp::traits::input_parameter< std::string >::type bootstrapMethod(bootstrapMethodSEXP);
+    Rcpp::traits::input_parameter< int >::type bootstrapNsim(bootstrapNsimSEXP);
+    rcpp_result_gen = Rcpp::wrap(RIsolationByDistanceBetweenIndividuals(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim));
     return rcpp_result_gen;
 END_RCPP
 }
 // RIsolationByDistanceBetweenGroups
-std::string RIsolationByDistanceBetweenGroups(std::string inputFile, std::string outputFile, std::string dataType, std::string statistic, std::string geographicScale, double CIcoverage, double testPoint, double minimalDistance, double maximalDistance, int mantelPermutations, bool mantelRankTest);
-RcppExport SEXP _genepop_RIsolationByDistanceBetweenGroups(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP dataTypeSEXP, SEXP statisticSEXP, SEXP geographicScaleSEXP, SEXP CIcoverageSEXP, SEXP testPointSEXP, SEXP minimalDistanceSEXP, SEXP maximalDistanceSEXP, SEXP mantelPermutationsSEXP, SEXP mantelRankTestSEXP) {
+std::string RIsolationByDistanceBetweenGroups(std::string inputFile, std::string outputFile, std::string dataType, std::string statistic, std::string geographicScale, double CIcoverage, double testPoint, double minimalDistance, double maximalDistance, int mantelPermutations, bool mantelRankTest, std::string bootstrapMethod, int bootstrapNsim);
+RcppExport SEXP _genepop_RIsolationByDistanceBetweenGroups(SEXP inputFileSEXP, SEXP outputFileSEXP, SEXP dataTypeSEXP, SEXP statisticSEXP, SEXP geographicScaleSEXP, SEXP CIcoverageSEXP, SEXP testPointSEXP, SEXP minimalDistanceSEXP, SEXP maximalDistanceSEXP, SEXP mantelPermutationsSEXP, SEXP mantelRankTestSEXP, SEXP bootstrapMethodSEXP, SEXP bootstrapNsimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -497,7 +504,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type maximalDistance(maximalDistanceSEXP);
     Rcpp::traits::input_parameter< int >::type mantelPermutations(mantelPermutationsSEXP);
     Rcpp::traits::input_parameter< bool >::type mantelRankTest(mantelRankTestSEXP);
-    rcpp_result_gen = Rcpp::wrap(RIsolationByDistanceBetweenGroups(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest));
+    Rcpp::traits::input_parameter< std::string >::type bootstrapMethod(bootstrapMethodSEXP);
+    Rcpp::traits::input_parameter< int >::type bootstrapNsim(bootstrapNsimSEXP);
+    rcpp_result_gen = Rcpp::wrap(RIsolationByDistanceBetweenGroups(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -809,8 +818,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genepop_REstimatingSpatialStructureAlleleIdentyAllPopulationsPairs", (DL_FUNC) &_genepop_REstimatingSpatialStructureAlleleIdentyAllPopulationsPairs, 3},
     {"_genepop_REstimatingSpatialStructureAlleleSizeAllPopulations", (DL_FUNC) &_genepop_REstimatingSpatialStructureAlleleSizeAllPopulations, 3},
     {"_genepop_REstimatingSpatialStructureAlleleSizeAllPopulationsPairs", (DL_FUNC) &_genepop_REstimatingSpatialStructureAlleleSizeAllPopulationsPairs, 3},
-    {"_genepop_RIsolationByDistanceBetweenIndividuals", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenIndividuals, 11},
-    {"_genepop_RIsolationByDistanceBetweenGroups", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenGroups, 11},
+    {"_genepop_RIsolationByDistanceBetweenIndividuals", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenIndividuals, 13},
+    {"_genepop_RIsolationByDistanceBetweenGroups", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenGroups, 13},
     {"_genepop_RIsolationByDistanceBetweenIndividualsWithSettingsFile", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenIndividualsWithSettingsFile, 3},
     {"_genepop_RIsolationByDistanceBetweenGroupsWithSettingsFile", (DL_FUNC) &_genepop_RIsolationByDistanceBetweenGroupsWithSettingsFile, 3},
     {"_genepop_REcumenicismFstat", (DL_FUNC) &_genepop_REcumenicismFstat, 2},

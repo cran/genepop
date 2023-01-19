@@ -121,7 +121,7 @@ int hardymin() {
 	    for(p = fichier_genepop->pops.begin(); p != fichier_genepop->pops.end(); p++) {
 	      genos.clear(); // nettoyage
 	      genos.fillGenotypes(iLoc, *p,fichier_genepop->coding[iLoc]);
-	      sprintf(fileName,"P%d_L%d",popit+1,iLoc+1);
+	      snprintf(fileName, sizeof(fileName),"P%d_L%d",popit+1,iLoc+1);
 	      ofstream PL(fileName,ios::out);
 	      if (!PL.is_open()) {
 #ifdef COMPATIBILITYRCPP
@@ -1371,9 +1371,9 @@ int HW_Pvalues_chains(vector<string>& markName) {
         infile.close();
       }
       if (globtestbool) {
-        sprintf(inpopname,"popc%d",valpop);
+        snprintf(inpopname, sizeof(inpopname),"popc%d",valpop);
         inpop.open(inpopname,ios::binary);
-        sprintf(inlocname,"locc%d",vallocus);
+        snprintf(inlocname, sizeof(inlocname),"locc%d",vallocus);
         inloc.open(inlocname,ios::binary);
         intot.open("poploc",ios::binary);
         outpop.open("outpop",ios::binary);
@@ -1468,7 +1468,7 @@ int HW_Pvalues_chains(vector<string>& markName) {
         ecaUinf=ecaUinf-float(pow(UInf,2))/float(batchnbr);
         UInf=UInf/float(batchnbr) ;
         ecaUinf=ecaUinf/ ( float(batchnbr)*float(batchnbr-1)) ;
-        ecaUinf=float(std::max(float(0),sqrt(ecaUinf))); // peut �tre n�gatif par erreur num�rique
+        ecaUinf=float(std::max(float(0),sqrt(ecaUinf))); // may be negative by floating point inaccuracy
         if ((_secs=float(_EndTime- initesTime))< 2147) _secs=float(endClock- initClock)/CLOCKS_PER_SEC;
         if (hwfilebool) {
           

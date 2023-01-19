@@ -42,6 +42,14 @@ knowledge of the CeCILL license and that you accept its terms.
 #include "MersenneTwister.h"
 #include "genepop.h"
 
+// For std::sort
+#include <algorithm> 
+
+// Bootstrap methods
+#define BOOT_METHOD_ABC 0
+#define BOOT_METHOD_BC  1
+#define BOOT_METHOD_BCA 2
+
 #define BIGTABLES
 const double DRIFT_PREC=0.00000001; //commun ? toutes les MC ? pour U (directionnel)
 const double COMP_PREC=0.000000000001; //commun ? toutes les MC ? pour logLR (maximum)
@@ -68,7 +76,9 @@ extern std::vector<double>ABCweight;
 extern double widthCI;
 extern bool identitySettingsBool,genicProbaTestBool,alleleNbrTestBool,geneDivTestBool,estimDiploidBool,LDprobaTestBool,
        gp_fileInSettingsBool,HWfileBool,strucFileBool,isoldeFileBool,multiMigFileBool,pauseGP,phylipBool,
-       alwaysAskBool,perf,GeometryInSettingsBool,Brookfield96Bool,nullIgnoredBool,NonNullfailuresBool;
+       alwaysAskBool,perf,GeometryInSettingsBool,Brookfield96Bool,nullIgnoredBool,NonNullfailuresBool, use_console_xy;
+extern size_t bootmethod; 
+extern size_t nboot; 
 extern std::vector<int>sequenceGeneDivRanks;
 
 namespace NS_GP {
@@ -111,7 +121,9 @@ void initialize_for_R();
 void clean(bool fich_genepop=true);
 void reinitializeGenepopS();
 void cleanGenepopS();
-int print_p(double pchi, std::ostream& fichier_out, int prec, bool endline);
+int print_p(double pchi, std::ostream& fichier_out, int prec, bool endline); 
+void ask_for_boot_options(); 
+std::string format_boot_options(); 
 
 std::vector<double> estimNullLocPop(const size_t iLoc,const size_t iPop,const bool printBool,
                                     std::map<ssize_t,double>& genocopy, // copy locale en <double> de la map de popGenos;

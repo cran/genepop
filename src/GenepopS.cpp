@@ -88,7 +88,7 @@ using namespace std;
 //string version=" v4.0 (Built on "+datestring+" at "+timestring+").";
 //string version="4.6";
 std::string getSetting(const std::string which) {
-  const std::string version="4.7.5"; // the O N L Y place to story this info.
+  const std::string version="4.8.2"; // the O N L Y place to story this info.
   if (which.compare("version")==0) return(version);
   if (which.compare("default_settingsfile")==0) return("genepop.txt");
   return("unknown 'which' value");
@@ -131,6 +131,12 @@ static char char_num[]=".NUM";
 static unsigned int boucle=0; // counts nested calls to menu()
 const bool liptakBool=false; // code en r?serve
 static bool exit_genepop = false; //ADD by jimmy
+bool use_console_xy = true;
+
+// Default method used for bootstrapping. Note that these values are overwritten
+// by initializeSetting(). 
+size_t bootmethod = BOOT_METHOD_ABC; 
+size_t nboot = 999; 
 
 namespace NS_GP {
 //vector<bool>ploidBool; // pour l'instant pont entre isolde_etc() et F_est.cpp
@@ -254,7 +260,7 @@ return 0;
 
 
 
-//---------------- R?cup?re gp_file, Date et time... -------------------
+//---------------- get gp_file, Date et time... -------------------
 //------------------------------------------------------------------------------
 int glance_fichier_in(bool fileCompareBool) {
 using namespace NS_GP;
@@ -2138,22 +2144,25 @@ int isolde_etc(bool indiv) {
     } /*else*/
     outname=isolde_file; // 'outname' used by calcwritecorw called within bootstrapOverLoci
     CABCbootstrap ABC(multimig::nb_loc_migf);
+    
     _first_of_repl=true;  // set to false in the first call of calcwritecorw()
     if (meanDiffBool) {
-      ABC.bootstrapOverLoci(&mean," for INTERCEPT",isolde_file,false);
-    } else {
-      ABC.bootstrapOverLoci(&slope," for SLOPE",isolde_file);
+      ABC.bootstrapOverLoci(bootmethod, &mean, 
+                            " for INTERCEPT", isolde_file, false);
+    } else { 
+      ABC.bootstrapOverLoci(bootmethod, &slope," for SLOPE",isolde_file);
       /// _first_of_repl can be set to true only once bc when rewrites the output file. But may not be a problem for multiMigFileBool case
       _first_of_repl=true;  // set to false in the first call of calcwritecorw()
       readMultiMigFile(isolde_file.c_str()); // it's better to reset the geo distances...
-      ABC.bootstrapOverLoci(&intercept," for INTERCEPT",isolde_file,false);
+      ABC.bootstrapOverLoci(bootmethod, &intercept, 
+                            " for INTERCEPT",isolde_file,false);
     }
 #ifdef COMPATIBILITYRCPP
     // Rcpp::R
 #else
     printf("\n results are stored in file %s\n",isolde_file.c_str());
 #endif
-
+    
     if (pauseGP) {
       noR_cout<<"\n(Return) to continue"<<endl; getchar();
     }
@@ -2375,10 +2384,12 @@ int isolde_etc(bool indiv) {
     /// and _first_of_repl must be run independently for 'mean' and BD analyses => they are exclusive alternatives
     if (meanDiffBool) {
       noR_cout<<"Analysis of mean differentiation\n";
-      ABC.bootstrapOverLoci(&mean_from_creatMat_isolde," for mean",nom_fich_CI,false);
+      ABC.bootstrapOverLoci(bootmethod, &mean_from_creatMat_isolde, 
+                            " for mean", nom_fich_CI, false);
     } else {
       noR_cout<<"Analysis of Isolation by distance\n"; // for general case
-      ABC.bootstrapOverLoci(&slope_from_creatMat_isolde," for SLOPE",nom_fich_CI); // modifies datamatrix::data; using it as scratch!
+      ABC.bootstrapOverLoci(bootmethod, &slope_from_creatMat_isolde, 
+                            " for SLOPE", nom_fich_CI, false); // modifies datamatrix::data; using it as scratch!
       if (perf) {	 //ecriture des resultats
         _gotoxy(5,9);
         noR_cout<<"Slope= "<<ABC.t0<<" ["<<ABC.tinf<<" , "<<ABC.tsup<<"]       ";  //screen
@@ -2399,7 +2410,8 @@ int isolde_etc(bool indiv) {
              && cmp_nocase(typeSelection,"inter_all_types")!=0 
              && cmp_nocase(typeSelection,"intra_all_types")!=0 ) mantelTest(false,mantelRankBool); // calcule Mantel aussi
       /** **/
-      ABC.bootstrapOverLoci(&intercept_from_creatMat_isolde," for INTERCEPT",nom_fich_CI,false);
+      ABC.bootstrapOverLoci(bootmethod, &intercept_from_creatMat_isolde, 
+                            " for INTERCEPT", nom_fich_CI, false);
     }
     //_first_of_repl=true;  // set to false in the first call of calcwritecorw()
     delete_ptrs(); //deletes houla[][][] ETC;
@@ -2436,7 +2448,7 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
 	vector<double>estimates(2);
 	vector<double> tminput(nbInd);
 	vector<double> tpinput(nbInd);
-    double epsn,tm,tp,cq,bhat,curv,tinf,tsup,bidul25,bidul975,machin,z;//ABC bootstrap variables
+    double epsn,tm,tp,cq,bhat,curv,tinf,tsup,bidul25,bidul975,qnorm_arg_4_12,z;//ABC bootstrap variables
 	double sigmahat=0.0;
 	double ahat=0.0;
     double epsn_value=0.001/nbInd;
@@ -2487,7 +2499,7 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
            *  * unconditionnally, for all ind and then genocopy[geno] is increased by genocopy[geno]. But this affects estimates 
            *     only if (ABCind_is_new_type)...
            *     
-           * Here the weigths are the genotype counts and sum to nbInd they are allready by a *factor* (1.-epsn) 
+           * Here the weigths are the genotype counts and sum to nbInd they are already by a *factor* (1.-epsn) 
            * hence nbInd*epsn must be added on the genotype of the ABCind     
            */
             if (ind>=genocumul) { // new geno on indiv ind;  // could test == instead of >= ?
@@ -2588,12 +2600,12 @@ vector<double> bootstrapNullAllele(CGenotypes *popGenos,const size_t iLoc, const
          failure="curv is too large                  ";
 	   	 return estimates; // not exit() !
 	} else {
-       machin=2*ndtr(ahat)*ndtr(-curv);
-	   if((machin>=1)||(machin<=0.0)) {//z=INFINITY; a priori machin est une proba...
+	  qnorm_arg_4_12=2*ndtr(ahat)*ndtr(-curv);
+	   if((qnorm_arg_4_12>=1)||(qnorm_arg_4_12<=0.0)) {//z=INFINITY; a priori 'qnorm_arg_4_12' est une proba...
 	   	 estimates.resize(0); // indicator failed computation
          failure="ndtri argument is not within ]0,1[";
 	   	 return estimates; // not exit() !
-       } else z=ndtri(machin);
+       } else z=ndtri(qnorm_arg_4_12);
     }
 	bidul25=(z+ndtri(gauss_inf))/(pow(1-ahat*(z+ndtri(gauss_inf)),2));
 	bidul975=(z+ndtri(gauss_sup))/(pow(1-ahat*(z+ndtri(gauss_sup)),2));
@@ -2858,9 +2870,10 @@ using namespace NS_GP;
        fichier_out<<"Genepop "<<getSetting("version")<<"\nEstimation of null allele frequency by Chakraborty et al's 1992 method.\n\n";
     else if (Brookfield96Bool)
        fichier_out<<"Genepop "<<getSetting("version")<<"\nEstimation of null allele frequency by Brookfield's 1996 method.\n\n";
-    else {
-         fichier_out<<"Genepop "<<getSetting("version")<<"\nMaximum likelihood estimation of null allele frequency\n\n";
-         fichier_out<<"EM algorithm (Dempster, Laird and Rubin, 1977)\n\n";
+    else if (NonNullfailuresBool) {
+      fichier_out<<"Genepop "<<getSetting("version")<<"\nMaximum likelihood estimation of null allele frequency and failure rate\n\n";
+    } else {
+      fichier_out<<"Genepop "<<getSetting("version")<<"\nMaximum likelihood estimation of null allele frequency\n\n";
     }
     fichier_out<<"File: "<<fichier_genepop->fileName<<" ("<<fichier_genepop->fileTitle<<")"<<endl;
     fichier_out<<endl;
@@ -3071,63 +3084,159 @@ int choix=0;
 //---------------- option 6 -------------------
 //------------------------------------------------------------------------------
 int FstIBD() {
-using namespace NS_GP;
-int choix=0;
+  using namespace NS_GP;
+  int choix=0;
 
-if (fichier_genepop->pops.size()==1) {
-  RnoR_cerr<<"(!) Only one 'pop' in input file: no information for genetic differentiation."<<endl;
+  if (fichier_genepop->pops.size()==1) {
+    RnoR_cerr<<"(!) Only one 'pop' in input file: no information for genetic differentiation."<<endl;
+  }
+
+  while (choix != 8) { 
+    if (exit_genepop) { 
+      return 0;
+    }  //ADD by jimmy
+    effacer_ecran();
+    afficher_version();
+#ifdef COMPATIBILITYRCPP
+  // Rcpp::R
+#else
+    
+    // Get a 
+    
+    printf(" Estimating spatial structure:\n");
+    printf("\n");
+    printf(" The information considered is :\n");
+    printf("      --> Allele identity (F-statistics)\n");
+    printf("                For all populations ............ 1\n");
+    printf("                For all population pairs ....... 2\n");
+    printf("      --> Allele size (Rho-statistics)\n");
+    printf("                For all populations ............ 3\n");
+    printf("                For all population pairs ....... 4\n");
+    printf("\n");
+    printf(" Isolation by distance  \n");
+    printf("                between individuals ............ 5\n");
+    printf("                between groups.................. 6\n");
+    printf("\n");
+    printf(" Set bootstrap options ......................... 7\n");
+    printf("   (current choice: %s)\n", format_boot_options().c_str() ); 
+    printf("\n");
+    printf("    Main menu  ................................. 8\n");
+#endif
+    
+    if ( (MenuOptions.size()>boucle-1) && (MenuOptions[boucle-1].size()>1) ) { 
+      choix=MenuOptions[boucle-1][1];
+    } else { 
+      choix = controle_choix();
+    }
+    
+    switch (choix) {
+      case 1 : Fstat(true,0);return(0);
+      case 2 : Fstat(true,2);return(0);
+      case 3 : Fstat(false,0);return(0);
+      case 4 : Fstat(false,2);return(0);
+      case 5 : { // individuals
+        first_repl=true;
+        isolde_etc(true);
+        return(0);
+      }
+      case 6 : { //groups
+        first_repl=true;
+        isolde_etc(false);
+        return(0);
+      }
+      case 7 : { 
+        ask_for_boot_options(); 
+        // This will keep us in the while loop and return to the current menu
+        choix = 0;
+        break; 
+      }; 
+      case 8 : return 0;
+    }
+  }
+  
+  return 0;
 }
 
-while (choix != 8) { // FR 2017/08/18: why not 7 ?
-             if(exit_genepop) {return 0;}  //ADD by jimmy
-             effacer_ecran();
-             afficher_version();
-             #ifdef COMPATIBILITYRCPP
-                 // Rcpp::R
-             #else
-             printf("\n");
-             printf("\n");
-             printf(" Estimating spatial structure:\n");
-             printf("\n");
-             printf(" The information considered is :\n");
-             printf("      --> Allele identity (F-statistics)\n");
-             printf("                For all populations ............ 1\n");
-             printf("                For all population pairs ....... 2\n");
-             printf("      --> Allele size (Rho-statistics)\n");
-             printf("                For all populations ............ 3\n");
-             printf("                For all population pairs ....... 4\n");
-             printf("\n");
-             printf(" Isolation by distance  \n");
-             printf("                between individuals ............ 5\n");
-             printf("                between groups.................. 6\n");
-             printf("\n");
-             printf("    Main menu  ................................. 7\n");
-             #endif
+#ifdef COMPATIBILITYRCPP 
+void ask_for_boot_options() { 
+  // Do nothing, we will never need this function when Genepop is run through 
+  // R
+}
+#else 
+void ask_for_boot_options() { 
+  
+  size_t choice = 0; 
+  while ( !( choice == 1 || choice == 2 || choice == 3 ) ) { 
+    effacer_ecran();
+    printf(" Choose the bootstrapping method to compute \n"); 
+    printf(" confidence intervals:\n"); 
+    printf(" \n"); 
+    printf("  ABC (default) ................................. 1 \n"); 
+    printf("  Bias-corrected (BC) ........................... 2 \n"); 
+    printf("  Bias-corrected and accelerated (BCa) .......... 3 \n"); 
+    printf(" \n"); 
+    printf(" Your choice ? : ");
+    choice = controle_choix();
+    switch (choice) { 
+      case 1 : 
+        bootmethod = BOOT_METHOD_ABC; 
+        break; 
+      case 2 : 
+        bootmethod = BOOT_METHOD_BC; 
+        break; 
+      case 3 : 
+        bootmethod = BOOT_METHOD_BCA; 
+        break; 
+      default: 
+        printf("Invalid number, please enter 1, 2 or 3.\n"); 
+        printf("(Return to continue)\n"); 
+        getchar(); // goes back to the top of the while block 
+    }
+  }
+  
+  if ( (bootmethod == BOOT_METHOD_BCA) || (bootmethod == BOOT_METHOD_BC) ) { 
+    size_t choice = 0; 
+    while ( choice < 1 ) { 
+      effacer_ecran();
+      printf("\n"); 
+      printf(" Choose the number of simulations to use for the bootstrap\n"); 
+      // https://stackoverflow.com/questions/940087/whats-the-correct-way-to-use-printf-to-print-a-size-t
+      printf("  (current choice: %zu):\n", nboot); 
+      printf("\n"); 
+      printf(" Enter a number: "); 
+      string readstr;
+      getline(std::cin, readstr);
+      choice = atol(readstr.c_str()); 
+      if ( choice < 1 ) { 
+        printf("Invalid number, please enter a non-zero positive integer.\n"); 
+        printf("(Return to continue)\n"); 
+        getchar(); 
+        // This will send us back to the top of the while loop
+        choice = 0; 
+      } else { 
+        nboot = choice; 
+      }
+    }
+  }
+  
+}
+#endif
 
-
-             if ((MenuOptions.size()>boucle-1) && (MenuOptions[boucle-1].size()>1))
-               choix=MenuOptions[boucle-1][1];
-             else choix = controle_choix();
-
-             switch (choix) {
-                    case 1 : Fstat(true,0);return(0);
-                    case 2 : Fstat(true,2);return(0);
-                    case 3 : Fstat(false,0);return(0);
-                    case 4 : Fstat(false,2);return(0);
-                    case 5 : { // individuals
-                                    first_repl=true;
-                                    isolde_etc(true);
-                                    return(0);
-                                  }
-                    case 6 : { //groups
-                                    first_repl=true;
-                                    isolde_etc(false);
-                                    return(0);
-                                  }
-                    case 7 : return 0;
-             }
-             }
-    return 0;
+string format_boot_options() { 
+  ostringstream boot_opt_str; 
+  boot_opt_str.clear(); 
+  switch (bootmethod) { 
+    case BOOT_METHOD_ABC: 
+      boot_opt_str << "ABC"; 
+      break; 
+    case BOOT_METHOD_BC: 
+      boot_opt_str << "BC"; 
+      break; 
+    case BOOT_METHOD_BCA: 
+      boot_opt_str << "BCa"; 
+      break; 
+  }
+  return( boot_opt_str.str() ); 
 }
 
 //---------------- option 7 -------------------
@@ -3270,12 +3379,12 @@ while (true) {
        return 0; // on sort de menu();
     } else { // end of MenuOptions reached and not perf
         if ( ! pauseGP) {
-            if (MenuOptions.size()==0 && Mode=="Batch") {
+            if (MenuOptions.size()==0 && ( Mode=="Batch" || Mode=="Batch2File" )) {
                 #ifdef COMPATIBILITYRCPP
                     // Rcpp::R
                 #else
                 cerr<<endl<<endl<<"(!) Suspect combination of options:  "<<endl;
-        		cerr<<"    no apparent MenuOptions, and Mode is Batch "<<endl;
+        		cerr<<"    no apparent MenuOptions, and Mode is Batch or Batch2File"<<endl;
                 cerr<<"    (as if Performance setting has been used), "<<endl;
                 cerr<<"    but a single input file is considered."<<endl;
                 cerr<<"    It may be worth reconsidering the settings."<<endl<<endl;
@@ -3635,7 +3744,9 @@ void reinitializeGenepopS() {
   strcpy(char_num, ".NUM");
   boucle=0;
   exit_genepop = false;
-
+  nboot=999; // default for BootstrapNsim
+  bootmethod = BOOT_METHOD_ABC; 
+  
   //NS_GP::allMax.clear();
   //NS_GP::nom_locus.clear();
   //NS_GP::nom_pop.clear();

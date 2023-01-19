@@ -147,12 +147,12 @@ REstimatingSpatialStructureAlleleSizeAllPopulationsPairs <- function(inputFile, 
     .Call('_genepop_REstimatingSpatialStructureAlleleSizeAllPopulationsPairs', PACKAGE = 'genepop', inputFile, outputFile, dataType)
 }
 
-RIsolationByDistanceBetweenIndividuals <- function(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest) {
-    .Call('_genepop_RIsolationByDistanceBetweenIndividuals', PACKAGE = 'genepop', inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest)
+RIsolationByDistanceBetweenIndividuals <- function(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim) {
+    .Call('_genepop_RIsolationByDistanceBetweenIndividuals', PACKAGE = 'genepop', inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim)
 }
 
-RIsolationByDistanceBetweenGroups <- function(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest) {
-    .Call('_genepop_RIsolationByDistanceBetweenGroups', PACKAGE = 'genepop', inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest)
+RIsolationByDistanceBetweenGroups <- function(inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim) {
+    .Call('_genepop_RIsolationByDistanceBetweenGroups', PACKAGE = 'genepop', inputFile, outputFile, dataType, statistic, geographicScale, CIcoverage, testPoint, minimalDistance, maximalDistance, mantelPermutations, mantelRankTest, bootstrapMethod, bootstrapNsim)
 }
 
 RIsolationByDistanceBetweenIndividualsWithSettingsFile <- function(inputFile, outputFile, settingsFile) {

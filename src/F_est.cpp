@@ -104,7 +104,7 @@ static size_t	global_geno_nbr;
     static size_t nb_pair_sam_sel;
 
 #ifdef BIGTABLES
-    static struct MStype<MSreal> MSbin; // structure definie dans le header
+    static struct MStype<MSreal> MSbin;
 
 //    MStype *houlaMS; //serait toutes les loc*paires dans un vecteur
     static MStype<MSreal> ***MStable,*MStableit; //serait toutes les loc*paires dans un vecteur
@@ -1505,19 +1505,22 @@ return output;
 /********************************************************************/
 void MS_for_isolde() {
 using namespace NS_F_est;
-long int controle;
 
 //vector<MStype>:: iterator MSit,MSini;
 
 //MStype<MSreal> *MSit;
 //MStype<MSreal> **MStableit1,*MStableit2;
-
+size_t nb_pair_info,nb_ind_info;
+bool indic_non_info;
 
 //cout<<"nb_locus "<<nb_locus<<endl;getchar();
     for(size_t loc=0;loc<nb_locus;loc++)  {
+      // two values that may be corrected in _e_stat case (= modif foor missing data, 02/2020):
+      nb_pair_info=nb_pair_sam;
+      nb_ind_info=nb_sam;
+      indic_non_info=false;
         loc_MSG[loc]=0.0;
         if (_e_stat) { loc_MSP[loc]=0.0;} // memory not allocated otherwise
-        controle=0;
         for(size_t ii1=0;ii1<nb_sam-1;ii1++) {//boucle sur toute les paires de pop for one locus
             for(size_t ii2=0;ii2<ii1+1;ii2++) {
                 // FR->FR we need typeSelection here...
@@ -1531,20 +1534,24 @@ long int controle;
                         else
                             loc_MSG[loc]+=MStableit->mmsi; //21/01/11 for IBD; recall loc_MSP is not allocated in this case
                     } else loc_MSG[loc]+=MStableit->mmsg;  // any other case, original code
-                    if (_e_stat) loc_MSP[loc]+=MStableit->mmsp;
-                    controle++;
+                    if (_e_stat) {loc_MSP[loc]+=MStableit->mmsp;}
+                } else if (_e_stat) {
+                  nb_pair_info-=1;
+                  indic_non_info=true;
                 }
             }
         }//fin boucle sur pair
+        if (indic_non_info) {nb_ind_info=ceil(sqrt(nb_pair_info*2));}
 
-        if(controle>0.0) {
-            loc_MSG[loc]/=controle;
+        if(nb_pair_info>0) {
+            loc_MSG[loc]/=nb_pair_info;
             if (_e_stat) {
-                loc_MSP[loc]/=controle;
-                Qpp[loc]=double(nb_pair_sam)*(2.-loc_MSG[loc]-loc_MSP[loc])/2.+nb_sam*(1.-loc_MSG[loc]/2.);
-                Qpp[loc]/=(nb_pair_sam+nb_sam);
+                loc_MSP[loc]/=nb_pair_info;
+              //// cout << nb_pair_info<<" "<< (2.-loc_MSG[loc]-loc_MSP[loc])/2<<" "<<(1.-loc_MSG[loc]/2.)<<" "<<nb_ind_info<<endl;
+                Qpp[loc]=double(nb_pair_info)*(2.-loc_MSG[loc]-loc_MSP[loc])/2.+nb_ind_info*(1.-loc_MSG[loc]/2.);
+                Qpp[loc]/=(nb_pair_info+nb_ind_info);
             }
-        } else { // si controle=0
+        } else { 
             if (_e_stat) {
                 Qpp[loc]=0.;
             }
@@ -1763,95 +1770,102 @@ MS_for_isolde();//calcul MSG de la pop pour chaque locus
 } //end create_matrices
 
 vector<double> calcwritecorw() {
-using namespace datamatrix;
-using namespace NS_F_est; //_perf
-vector<double> output(3);
-unsigned int s1, s2;
-ofstream iso;
-//   	if (!_perf) {
-  		iso.open(outname.c_str(),ios::app);   /*  Output to iso file  */
-  		if (!iso.is_open()) {
-            #ifdef COMPATIBILITYRCPP
-                // Rcpp::R
-            #else
-                cerr<<"calcwritecorw() could not reopen iso file"<<endl;
-                if (cinGetOnError) cin.get();
-            #endif
-            genepop_exit(1, "calcwritecorw() could not reopen iso file");
-        }
+  using namespace datamatrix;
+  using namespace NS_F_est; //_perf
+  vector<double> output(3);
+  unsigned int s1, s2;
+  ofstream iso;
+  //   	if (!_perf) {
+  iso.open(outname.c_str(),ios::app);   /*  Output to iso file  */
+  if (!iso.is_open()) {
+#ifdef COMPATIBILITYRCPP
+    // Rcpp::R
+#else
+    cerr<<"calcwritecorw() could not reopen iso file"<<endl;
+    if (cinGetOnError) cin.get();
+#endif
+    genepop_exit(1, "calcwritecorw() could not reopen iso file");
+  }
 //  	}
+  unsigned long int nans=0, outsofrange=0;
+  bool isnan_,isout_;
   long double xsum, ysum, x2sum, xysum, x, y, xcount;
   long double xbar, ybar, varx, covxy;
   const float minifloat=numeric_limits<float>::epsilon();
   xsum = ysum = x2sum = xysum = xcount = 0.0;
   if (!_perf && _first_of_repl) effacer_ecran();
   gasp:
-    /** provide a mindist value **/
-    if (_perf || !pauseGP) {
-        if (_logdist.compare("log")==0) {
-            if (mindist<=minifloat) mindist=minifloat; //this is the NOT-log transf minimal positive value
-        } else {
-            if (mindist<=minifloat) mindist=0; // 0 is a valid minimal default value
-        }
-    } // default pour perf ou batch mode si rien dans settings
-    else if(_first_of_repl && (mindist<=minifloat || alwaysAskBool)) { // -1 a la declaration, a pu etre modif par settings
-             	_gotoxy(0,1);
-
-                noR_cout<<" Minimum distance between samples\n to be taken in account for regression? ";
-             	_gotoxy(41,2);
-             	cin>>mindist;
-             	cin.ignore();
-    } //sinon il a deja une valeur>0
-    /** Only now we are sure to have a mindist value**/
-    if(_first_of_repl) {
-       if (maxdist < mindist) {
-               effacer_ecran();
-               #ifdef COMPATIBILITYRCPP
-                   // Rcpp::R
-               #else
-                 printf("maxdist < mindist. Check options.\n");
-               #endif
-
-    		   goto gasp;
-        }
-       if (_logdist.compare("log")==0) {
-          if (mindist>0) mindistorlogdist = log(mindist);
-    	  else {
-               effacer_ecran();
-               #ifdef COMPATIBILITYRCPP
-                   // Rcpp::R
-               #else
-                printf("Only positive minimal distance if log transformation is used, please.\n");
-               #endif
-
-    		   goto gasp;
-          }
-          maxdistorlogdist = log(maxdist);
-       } else {
-           mindistorlogdist = mindist; // case not log transfo
-           maxdistorlogdist = maxdist;
-       }
+  /** provide a mindist value **/
+  if (_perf || !pauseGP) {
+    if (_logdist.compare("log")==0) {
+      if (mindist<=minifloat) mindist=minifloat; //this is the NOT-log transf minimal positive value
+    } else {
+      if (mindist<=minifloat) mindist=0; // 0 is a valid minimal default value
     }
-    //else mindistorlogdist should already be set
+  } // default pour perf ou batch mode si rien dans settings
+  else if(_first_of_repl && (mindist<=minifloat || alwaysAskBool)) { // -1 a la declaration, a pu etre modif par settings
+    _gotoxy(0,1);
+    noR_cout<<" Minimum distance between samples\n to be taken in account for regression? ";
+    _gotoxy(41,2);
+    cin>>mindist;
+    cin.ignore();
+  } //sinon il a deja une valeur>0
+  /** Only now we are sure to have a mindist value**/
+  if(_first_of_repl) {
+     if (maxdist < mindist) {
+             effacer_ecran();
+#ifdef COMPATIBILITYRCPP
+                 // Rcpp::R
+#else
+               printf("maxdist < mindist. Check options.\n");
+#endif
+
+  		   goto gasp;
+      }
+     if (_logdist.compare("log")==0) {
+        if (mindist>0) mindistorlogdist = log(mindist);
+  	  else {
+          effacer_ecran();
+#ifdef COMPATIBILITYRCPP
+                 // Rcpp::R
+#else
+              printf("Only positive minimal distance if log transformation is used, please.\n");
+#endif
+  		    goto gasp;
+        }
+        maxdistorlogdist = log(maxdist);
+     } else {
+         mindistorlogdist = mindist; // case not log transfo
+         maxdistorlogdist = maxdist;
+     }
+  }
+  //else mindistorlogdist should already be set
 //cout<<mindistorlogdist;getchar();
-   for (s1=0; s1<nb_sam_migf; s1++)
-	 for (s2=0; s2<s1; s2++) //{cout<<"("<<s1<<","<<s2<<","<<mindist<<") ";
-///////////////cout<<"("<<data[s1][s2]<<","<<data[s2][s1]<<") ";getchar();
-//	  if (!isnan(data[s2][s1])&& !isinf(data[s1][s2])&& data[s1][s2]>mindistorlogdist) {
-	  if (!isnan(data[s2][s1])&& !isnan(data[s1][s2])&& data[s1][s2]>mindistorlogdist && data[s1][s2]<maxdistorlogdist) {
-       //cout<<s1<<" "<<s2<< " "<<data[s1][s2]<<" "<<data[s2][s1];
-        xcount+=1;
-		x = data[s1][s2];
-		y = data[s2][s1];
-//cout<<" "<<x;
-		xsum += x;
-		ysum += y;
-		x2sum += dsqr(x);
-		xysum += x * y;
-      } //else cout<<"("<<s1<<","<<s2<<","<<mindist<<") ";
-//}
-//cout<<"(!) getchar():";getchar();
-//cout<<xsum<<" "<<ysum<<" "<<x2sum<<" "<<xysum<<" "<<xcount<<endl;getchar(); getchar();
+  for (s1=0; s1<nb_sam_migf; s1++)
+  for (s2=0; s2<s1; s2++) {
+   //{cout<<"("<<s1<<","<<s2<<","<<mindist<<") ";
+   ///////////////cout<<"("<<data[s1][s2]<<","<<data[s2][s1]<<") ";getchar();
+   isnan_= (isnan(data[s2][s1]) || isnan(data[s1][s2]));
+   isout_=(data[s1][s2]<mindistorlogdist || data[s1][s2]>maxdistorlogdist);
+   if ( (! isnan_) && (! isout_)) {
+     xcount+=1;
+     x = data[s1][s2];
+     y = data[s2][s1];
+     //cout<<" "<<x;
+     xsum += x;
+     ysum += y;
+     x2sum += dsqr(x);
+     xysum += x * y;
+   }  else {
+     if (isnan_) nans++; 
+     if (isout_) outsofrange++;
+   }  
+ }
+#ifdef COMPATIBILITYRCPP
+// Rcpp::R
+#else
+// cout<<xsum<<" "<<ysum<<" "<<x2sum<<" "<<xysum<<" "<<xcount<<endl; getchar(); getchar();
+#endif
   xbar = xsum / xcount;
   ybar = ysum / xcount;
   varx = x2sum / xcount - dsqr(xbar);
@@ -1861,26 +1875,49 @@ ofstream iso;
   output[0] = double(ybar - output[1] * xbar); //a
   // if (chh=='n') fprintf(opt,"\nFitting Fst "); else
 	if ((!_perf) && (_first_of_repl)) {
-        iso<<"\n________________________________________________________________\n";
-	    if(cmp_nocase(typeSelection,"only")==0) {
-            iso<<"Only [type "<<typeindex1<<"] pairs retained ("<<double(xcount)<<" pairs)"<<endl;
-        } else if(cmp_nocase(typeSelection,"inter")==0) {
-            iso<<"Only [inter types "<<typeindex1<<","<<typeindex2<<"] pairs retained ("<<double(xcount)<<" pairs)"<<endl;
-        }
-           iso<<"\nMinimum distance between pairs in regression: "<<mindist<<"\n";
-           if (maxdist< numeric_limits<double>::max()) iso<<"Maximum distance between pairs in regression: "<<maxdist<<"\n";
-        if (varx<numeric_limits<double>::epsilon()) { // comparing long double to double for safety
-            iso<<"\nNo variation in geographic distance. No further analysis possible\n";
-            output.resize(0);
-            output.resize(2,numeric_limits<double>::quiet_NaN());
-        } else {
-            iso<<"\nFitting "<<statname;
-            if (_logdist.compare("log")==0)
-            iso<<" to a + b ln(distance)\na = "<<output[0]<<", b = "<<output[1]<<"\n";
-            else
-            iso<<" to a + b (distance)\na = "<<output[0]<<", b = "<<output[1]<<"\n";
-        }
-//		iso.close();
+	  iso<<endl; // blanlkline after half matrices
+	  iso<<"________________________________________________________________"<<endl; // 1 line with rule
+	  
+	  iso<<endl; // one blank line
+	  
+	  // 1 line with distance range info:
+	  if (maxdist< numeric_limits<double>::max()) {
+	    iso << "Geographical distance range of pairs allowed for regression: ( "<<mindist<<" -- "<<maxdist<<" );";
+	  } else iso << "Geographical distance range of pairs allowed for regression: ( "<<mindist<<" -- Infinity );";
+	  iso<<endl;
+	  
+	  // 2 lines if type sel or nans, 1 otherwise:
+	  if(cmp_nocase(typeSelection,"only")==0) {
+	    iso<<"Only [type "<<typeindex1<<"] pairs retained; ";
+	    if (outsofrange)  iso<<outsofrange<<" pairs out of geographical range;"<<endl;
+	    iso<< double(xcount)<<" pairs finally retained."<<endl;
+	  } else if(cmp_nocase(typeSelection,"inter")==0) {
+	    iso<<"Only [inter types "<<typeindex1<<","<<typeindex2<<"] pairs retained; ";
+	    if (outsofrange)  iso<<outsofrange<<" pairs out of geographical range;"<<endl;
+	    iso<< double(xcount)<<" pairs finally retained."<<endl;
+	  } else if (nans>0) {
+	    if (outsofrange>0) {
+	      iso<<nans<<" non-informative pairs, and "<<outsofrange<<" pairs out of geographical range;"<<endl;
+	      iso<< double(xcount)<<" pairs finally retained."<<endl;
+	    } else iso<<nans<<" non-informative pairs; "<< double(xcount)<<" pairs retained."<<endl;
+	  } else if (outsofrange>0) {
+	     iso<<outsofrange<<" pairs out of geographical range; "<<double(xcount)<<" pairs retained"<<endl;
+	  } else iso<<double(xcount)<<" pairs"<<endl;
+	  
+	  iso<<endl; // one blank line
+	  
+	  if (varx<numeric_limits<double>::epsilon()) { // comparing long double to double for safety
+	    iso<<"No variation in geographic distance. No further analysis possible\n";
+	    output.resize(0);
+	    output.resize(2,numeric_limits<double>::quiet_NaN());
+	  } else {
+	    iso<<"Fitting "<<statname;
+	    if (_logdist.compare("log")==0)
+	      iso<<" to a + b ln(distance)\na = "<<output[0]<<", b = "<<output[1]<<"\n";
+	    else
+	      iso<<" to a + b (distance)\na = "<<output[0]<<", b = "<<output[1]<<"\n";
+	  }
+	  //		iso.close();
 	}
     _first_of_repl=false;
     iso.close();
@@ -2330,6 +2367,7 @@ void lecture_popi_popj() {
                     sumQpp+=Qpp[loc1]*ABCweight[loc1];
         //		sumQriQrj+=(QriQrj[loc1]/nnn[loc1])*ABCweight[loc1];
                     sumQriQrj+=houla[loc1][popi-1][popj-2]*ABCweight[loc1];
+                    //// std::cout<<popi<<" "<<popj<<" "<< houla[loc1][popi-1][popj-2]<<endl;
                     // (: l'aternative est de recalculer QriQrj et nnn e chaque iteration du bootstrap par lecture_Xi_Xj_pmoy;
                 }
                 //Note hack on loc_MSG in MS_for_isolde: it contains MSp or MSi if haploid singleGeneDiv
@@ -2391,6 +2429,7 @@ double pot;
     if(fabs(denom_pot)<0.000001) {
         f_mig<<"NaN                  "; // FR10/2010
     } else {//pot=(MSp2P-MSg2P)/denom_pot;//ancien estimateur
+      //// std::cout<<sumQbij<<" "<<sumQriQrj<<" "<<sumQpp<<" "<<denom_pot<<" "<<endl;
         if (_e_stat) pot=-2.*(sumQbij-sumQriQrj+sumQpp)/denom_pot; //noter sumQriQrj*=2.; a la fin de lecture_popi_popj();
         else if (_a_stat || singleGeneDiv) {
             pot=MSp2P/denom_pot-0.5;
@@ -2436,6 +2475,7 @@ using namespace NS_F_est;
 	// r=i xor r=j
 	for(size_t loc=0;loc<nb_locus;loc++) {
         MSbin=MStable[loc][popj-2][popi-1];;
+	  //// std::cout<<popi<<" "<<popj<<" "<< QriQrj[loc]<<" "<< MSbin.mmsg<<endl;
 		if(MSbin.nnc>0.5) {
 			QriQrj[loc]+=(2.-(MSbin.mmsg)); //X_i^2+X_j^2
 			nnn[loc]+=2;

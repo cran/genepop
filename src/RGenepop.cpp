@@ -34,7 +34,7 @@ same conditions as regards security.
 The fact that you are presently reading this means that you have had
 knowledge of the CeCILL license and that you accept its terms.
 
- ***************************************************************************/
+***************************************************************************/
 
 #include "RGenepop.h"
 #include "GenepopS.h"
@@ -43,8 +43,12 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <sstream>
 #include <unistd.h>
 
+#ifdef RGENEPOPDEBUG
+const bool debugMode = true; 
+#else 
+const bool debugMode = false; 
+#endif
 
-const bool debugMode = false;
 static long RrandomSeed = 67144630;
 static long RmantelSeed = 67144630;
 
@@ -301,6 +305,25 @@ std::string getOptionGeoDistFile(std::string inputFile) {
 
 std::string getOptionSettingsFile(std::string settingsFile) {
   return "settingsFile="+settingsFile;
+}
+
+// The method arg here is checked beforehand to match either ABC, BC or BCa, so 
+// the function should always return. 
+std::string getOptionBootstrapMethod(std::string method) {
+  if ( method.compare("BCa") == 0 ) { 
+    return "BootstrapMethod=BCa"; 
+  } else if ( method.compare("BC") == 0 ) { 
+    return "BootstrapMethod=BC"; 
+  } else { 
+    return "BootstrapMethod=ABC"; 
+  }
+}
+
+std::string getOptionBootstrapNsim(int bootnsim) {
+  std::ostringstream stream;
+  stream.clear();
+  stream << "BootstrapNsim=" << bootnsim;
+  return stream.str(); 
 }
 
 std::string getOptionModeBatch() {
@@ -1312,18 +1335,18 @@ std::string REstimatingSpatialStructureAlleleIdentyAllPopulations(std::string in
   using namespace std;
   int agc = 6;
   string agv[6];
-
+  
   agv[0] = getNameProg();
   agv[1] = getOptionInputFile(inputFile);
   agv[2] = getOptionMenu("6:1");
   agv[3] = getOptionEstimationPloidy(dataType);
   agv[4] = getOptionRandomSeed(getRandomSeed());
   agv[5] = getOptionModeBatch();
-
+  
   printCmd(agc, agv);
-
+  
   mainJimmy(agc, agv);
-
+  
   if(!outputFile.empty()) {
     rename(getOutPutFileMenu_6_1(inputFile).c_str(), outputFile.c_str());
     return(outputFile.c_str()); 
@@ -1345,7 +1368,7 @@ std::string REstimatingSpatialStructureAlleleIdentyAllPopulationsPairs(std::stri
   agv[3] = getOptionEstimationPloidy(dataType);
   agv[4] = getOptionRandomSeed(getRandomSeed());
   agv[5] = getOptionModeBatch();
-
+  
   printCmd(agc, agv);
   mainJimmy(agc, agv);
 
@@ -1416,14 +1439,16 @@ std::string REstimatingSpatialStructureAlleleSizeAllPopulationsPairs(std::string
 
 
  // [[Rcpp::export]]
- std::string RIsolationByDistanceBetweenIndividuals (std::string inputFile, std::string outputFile, std::string dataType, 
-                                                     std::string statistic, std::string geographicScale,
-                                                     double CIcoverage, double testPoint, double minimalDistance, 
-                                                     double maximalDistance, int mantelPermutations, bool mantelRankTest ) {
+ std::string RIsolationByDistanceBetweenIndividuals(std::string inputFile, std::string outputFile, std::string dataType, 
+                                                    std::string statistic, std::string geographicScale,
+                                                    double CIcoverage, double testPoint, double minimalDistance, 
+                                                    double maximalDistance, int mantelPermutations, bool mantelRankTest, 
+                                                    std::string bootstrapMethod, 
+                                                    int bootstrapNsim) {
    using namespace std;
    
-    int agc = 14;
-    string agv[14];
+    int agc = 16;
+    string agv[16];
 
     agv[0] = getNameProg();
     agv[1] = getOptionInputFile(inputFile);
@@ -1433,12 +1458,15 @@ std::string REstimatingSpatialStructureAlleleSizeAllPopulationsPairs(std::string
     agv[5] = getOptionGeographicScale(geographicScale);
     agv[6] = getOptionICoverage(CIcoverage);
     agv[7] = getOptionTestPoint(testPoint);
+//     Rcpp::Rcerr << "\ntp:" << testPoint << " // go: " << getOptionTestPoint(testPoint) << "\n"; 
     agv[8] = getOptionMinimalDistance(minimalDistance);
     agv[9] = getOptionMaximalDistance(maximalDistance);
     agv[10] = getOptionMantelPermutations(mantelPermutations);
     agv[11] = getOptionMantelRankTest(mantelRankTest);
     agv[12] = getOptionMantelSeed(getMantelSeed());
-    agv[13] = getOptionModeBatch();
+    agv[13] = getOptionBootstrapMethod(bootstrapMethod);
+    agv[14] = getOptionBootstrapNsim(bootstrapNsim);
+    agv[15] = getOptionModeBatch();
 
     printCmd(agc, agv);
     
@@ -1458,14 +1486,23 @@ std::string REstimatingSpatialStructureAlleleSizeAllPopulationsPairs(std::string
 }
 
   // [[Rcpp::export]]
-std::string RIsolationByDistanceBetweenGroups(std::string inputFile, std::string outputFile, 
-                                              std::string dataType, std::string statistic, std::string geographicScale,
-                                              double CIcoverage, double testPoint, double minimalDistance, 
-                                              double maximalDistance, int mantelPermutations, bool mantelRankTest ) {
-  using namespace std;
-  int agc = 14;
-    string agv[14];
-
+std::string RIsolationByDistanceBetweenGroups(std::string inputFile, 
+                                              std::string outputFile, 
+                                              std::string dataType, 
+                                              std::string statistic, 
+                                              std::string geographicScale,
+                                              double CIcoverage, 
+                                              double testPoint, 
+                                              double minimalDistance, 
+                                              double maximalDistance, 
+                                              int mantelPermutations, 
+                                              bool mantelRankTest, 
+                                              std::string bootstrapMethod, 
+                                              int bootstrapNsim) {
+    using namespace std;
+    int agc = 16;
+    string agv[16];
+    
     agv[0] = getNameProg();
     agv[1] = getOptionInputFile(inputFile);
     agv[2] = getOptionMenu("6:6");
@@ -1480,7 +1517,9 @@ std::string RIsolationByDistanceBetweenGroups(std::string inputFile, std::string
     agv[11] = getOptionMantelRankTest(mantelRankTest);
     agv[12] = getOptionMantelSeed(getMantelSeed());
     agv[13] = getOptionModeBatch();
-
+    agv[14] = getOptionBootstrapMethod(bootstrapMethod);
+    agv[15] = getOptionBootstrapNsim(bootstrapNsim);
+    
     printCmd(agc, agv);
 
     mainJimmy(agc, agv);

@@ -3,7 +3,9 @@ if (Sys.getenv("_LOCAL_TESTS_")=="TRUE") { ## not on CRAN
     pkg   <- "genepop"
     require(pkg, character.only=TRUE, quietly=TRUE)
     if (interactive())  {
-      testfiles <- dir("C:/home/francois/travail/stats/Genepop_R/Genepop/tests/testthat/",pattern="*.R",full.names = TRUE)
+      fn <- get("getActiveProject",envir = asNamespace("rstudioapi"))
+      projpath <- fn()
+      testfiles <- dir(paste0(projpath,"/tests/testthat/"),pattern="*.R",full.names = TRUE)
       timings <- t(sapply(testfiles,function(fich){system.time(source(fich))}))
       print(colSums(timings))
       ## test_package(pkg) ## for an installed package

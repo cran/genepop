@@ -18,6 +18,8 @@ ibd(
   maximalDistance = 1e+09,
   mantelPermutations = 1000,
   mantelRankTest = FALSE,
+  bootstrapMethod = "ABC",
+  bootstrapNsim = 999,
   verbose = interactive()
 )
 }
@@ -45,6 +47,12 @@ ibd(
 \item{mantelPermutations}{numeric: The number of permutations may be specified}
 
 \item{mantelRankTest}{logical: whether to use ranks in the Mantel test}
+
+\item{bootstrapMethod}{character: which bootstrap method to use (one of 
+"ABC", "BC" or "BCa").}
+
+\item{bootstrapNsim}{integer: the number of bootstrap simulations to use 
+(has no effect if method is "ABC").}
 
 \item{verbose}{logical: whether to print some information}
 }

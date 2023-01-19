@@ -3,9 +3,9 @@ title: '`r paste("Genepop version ", genepop::getVersion())`'
 author: "F. Rousset"
 date: '`r genepop:::.getDocDate()`'
 output:
-  bookdown::gitbook: default
   bookdown::pdf_book:
     keep_tex: yes
+  bookdown::gitbook: default
   html_document: default
   pdf_document: default
 documentclass: book
@@ -22,7 +22,7 @@ header-includes:
 - \newcommand{\Migraine}{\textsc{Migraine}}
 - \newcommand{\optN}[2]{1}
 - \newcommand{\afaire}[1]{\textcolor{red}{\textbf{1}}}
-- \newcommand{\webpage}{\href{http://kimura.univ-montp2.fr/~rousset/Genepop.htm}{Genepop}}
+- \newcommand{\webpage}{\href{https://kimura.univ-montp2.fr/~rousset/Genepop.htm}{Genepop}}
 bibliography: genepop.bib
 biblio-style: plain
 ---
@@ -49,7 +49,7 @@ This is a documentation for the Genepop software, distributed both as stand-alon
 - **It performs analyses of isolation by distance** from pairwise comparisons of individuals or population samples,
     including confidence intervals for "neighborhood size".
 
-A formal reference for the current version of Genepop is [Rousset (2008)](http://dx.doi.org/10.1111/j.1471-8286.2007.01931.x).
+A formal reference for the current version of Genepop is [Rousset (2008)](https://doi.org/10.1111/j.1471-8286.2007.01931.x).
 Likelihood methods based on coalescent algorithms are being developed in a distinct software, Migraine  [@RoussetL07; @RoussetL12; @LebloisX14].
 
 Genepop also converts data from the Genepop input format to formats of some softwares that were around in Genepop’s youth [@RaymondR95]; there has been little need to update this option as many more recent softwares for population genetic analyses read input files in the Genepop format.
@@ -57,21 +57,25 @@ Genepop also converts data from the Genepop input format to formats of some soft
 The two Genepop distributions
 -----------------------------
 
-Genepop is now distributed both as an R package, and as stand-alone software. See the [Genepop distribution page](http://kimura.univ-montp2.fr/~rousset/Genepop.htm) for the latter. This documentation describes the use of the executable. The functionalities it describes are available in an R session, using R functions described only in the package documentation. 
+Genepop is now distributed both as an R package, and as stand-alone software. See the [Genepop distribution page](https://kimura.univ-montp2.fr/~rousset/Genepop.htm) for the latter. This documentation describes the use of the executable. The functionalities it describes are available in an R session, using R functions described only in the package documentation. 
 
 Changes since version 4.0
 -------------------------
 \index{Genepop@\Genepop, differences from previous versions}
 
-<!-- **Version `r genepop::getVersion()`** -->
+Changes since version 4.6.9 that also affect the R package are described in the [NEWS file](https://cran.r-project.org/package=genepop/news.html) of that package. Only changes affecting the stand-alone executable are reported here.
+
+**Version 4.8.2**
+
+Two additional variants of the non-parametric bootstrap have been implemented in analyses of isolation by distance. The new setting `BootstrapMaethod` can be used to select a non-default one.
 
 **Version 4.7.2**
 
-A new keyword `intra_all_types` for setting "popTypeSelection" allows one to perform a single spatial regression (but not Mantel tests) for all pairs of individuals or populations within types (e.g., individuals within patches, excluding pairwise statistics for pairs of individuals between patches).
+A new keyword `intra_all_types` for setting `popTypeSelection` allows one to perform a single spatial regression (but not Mantel tests) for all pairs of individuals or populations within types (e.g., individuals within patches, excluding pairwise statistics for pairs of individuals between patches).
 
 Yet another problem has been fixed for Mantel tests' handling of missing pairwise genetic information (specifically for pairs of "pop" -- most likely, individuals -- sharing no genotypic information at any locus). 
 
-**Version 4.7.1**
+**Version 4.6.9**
 
 Genepop is now also distributed as an R package. 
 It now uses the implementation of the Mersenne twister pseudo-random number generator found in recent C++ compilers. This has two implications. First, a recent compiler must be used, as described below. Second, test results of previous versions cannot be exactly replicated.   
@@ -148,13 +152,13 @@ With more recent versions of `g++` (>=6.0) or `clang++`, no such flag is require
 
 The data files do not need to be in the same directory as the executable[^1]; however, users might find that specifying path names under Windows is not as easy at it should.
 
-Examples and documentation files are included in the R package and are available on the [Genepop distribution page](http://kimura.univ-montp2.fr/~rousset/Genepop.htm).
+Examples and documentation files are included in the R package and are available on the [Genepop distribution page](https://kimura.univ-montp2.fr/~rousset/Genepop.htm).
 
 Linkdos\index{Linkdos program}, a program described by @GarnierD92, is distributed with (but is not part of) Genepop. It is originally a DOS program, but the source file distributed can be recompiled under Linux using the Free Pascal compiler (or at least ``could'', since this is no longer maintained/checked). 
 
 Example sessions
 ----------------
-To reproduce the examples of this session one should copy in a personal directory the examples files found in the `extdata/` subdirectory of the packageor on the [Genepop distribution page](http://kimura.univ-montp2.fr/~rousset/Genepop.htm).
+To reproduce the examples of this session one should copy in a personal directory the examples files found in the `extdata/` subdirectory of the packageor on the [Genepop distribution page](https://kimura.univ-montp2.fr/~rousset/Genepop.htm).
 
 ### Example 1: basic session
 Open a console window in the directory where Genepop has
@@ -204,7 +208,7 @@ Execute the same command as in the previous example but with one more statement:
 
      Genepop settingsFile=SampleSettings.txt Mode=Batch
 
-\index{Mode setting} \index{Batch mode}Genepop should perform the same computations as in the previous example but it will not stop and wait for feedback, and will exit after completion of the computations. Note again that spaces are not allowed within each of the arguments `settingsFile=SampleSettings.txt` and `Mode=Batch`, nor more generally in arguments specified on the command line.
+\index{Mode setting} \index{Batch mode}Genepop should perform the same computations as in the previous example but it will not stop and wait for feedback, and will exit after completion of the computations. Note again that spaces are not allowed within each of the arguments `settingsFile=SampleSettings.txt` and `Mode=Batch`, nor more generally in arguments specified on the command line. `Mode=Batch2File` is a variant of the batch mode that also removes some console outputs. It is suitable for use in running environments where the console output is redirected to a file.
 
 The batch mode makes it easy to analyze multiple files. However, note that concurrent Genepop processes\index{Concurrent processes} should be run in distinct directories. Otherwise, the temporary files of each process might conflict with each other.
 
@@ -295,7 +299,7 @@ There are however constraints to be obeyed
 
 -   Genepop input files are ASCII text files.
 
-The last point implies that under **Windows**,\index{Microsoft Windows!file format issues} you should avoid using Microsoft Word to edit input files (and settings files as well). Rather use a text editor such as [Notepad++](http://notepad-plus-plus.org).[^6] It has also appeared that certain Microsoft products under **Mac OS X**\index{Mac OS X!file format issues} still produced files formatted according to the older Mac format. Genepop now catches and corrects this miserable feature.
+The last point implies that under **Windows**,\index{Microsoft Windows!file format issues} you should avoid using Microsoft Word to edit input files (and settings files as well). Rather use a text editor such as [Notepad++](https://notepad-plus-plus.org).[^6] It has also appeared that certain Microsoft products under **Mac OS X**\index{Mac OS X!file format issues} still produced files formatted according to the older Mac format. Genepop now catches and corrects this miserable feature.
 
 One can also find some conversion tools (e.g. from EXCEL) on the web.
 
@@ -974,10 +978,11 @@ This estimator, reported in options 1 and 5, was designed to have lower variance
 Bootstraps
 ----------
 \index{Confidence intervals!bootstrap}
-Option 6 constructs approximate bootstrap confidence (ABC) intervals [@DiCiccioE96], assuming that each locus is an independent realization of genealogical and mutation processes. The bootstrap is a general methodology with different incarnations. The ABC methods were chosen because they balance moderate computation needs with good accuracy compared to alternatives. Bootstrap methods are approximate, and simulation tests of their performance (a too rare deed in statistical population genetics) for the present application are reported in @LebloisER03 and @WattsX07.
+Option 6 constructs approximate bootstrap confidence intervals [@DiCiccioE96], assuming that each locus is an independent realization of genealogical and mutation processes. The bootstrap is a general methodology with different incarnations: ABC, BC and BCa variants are implemented for this option. The default bootstrap method, ABC, was chosen for typical microsatellite data sets because it balances moderate computation needs (for small number of loci) with good accuracy compared to alternatives. Bootstrap methods are approximate, and simulation tests of their performance (a too rare deed in statistical population genetics) for the present application are reported in @LebloisER03 and @WattsX07. 
 
-The ABC method is also applied over individuals in option 8 to compute
-confidence intervals for null allele frequency estimates.
+For SNP data sets of thousands of loci, the ABC method can become very slow and the alternative BC bootstrap method may be useful. BC is the bias-corrected percentile method discussed in the early bootstrap literature [@Efron87] and superseded by the BCa method which is more accurate for small samples. However the BCa method (also implemented) will again be slow for large number of loci, while the BC may be both reasonably accurate and reasonably fast in that case.
+
+The ABC method is also applied over individuals in option 8 to compute confidence intervals for null allele frequency estimates.
 
 Mantel test
 -----------

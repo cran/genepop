@@ -51,6 +51,7 @@ knowledge of the CeCILL license and that you accept its terms.
 #include <Rcpp.h>
 #endif
 #include "genepop.h"
+#include "GenepopS.h"
 #include "tools.h"
 
 //PAS d'EXTERN dans ce fichier !!
@@ -107,7 +108,9 @@ void _gotoxy(int x,int y) {
      mescoord.Y=y;
      SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),mescoord);
     #else  //vt100 terminals
-     cout<<"\033["<<y+1<<";"<<x+1<<"H"<<flush; //equiv printf+flush ?
+     if (use_console_xy) {
+       cout<<"\033["<<y+1<<";"<<x+1<<"H"<<flush;
+     } else cout<<" "<<flush;
     #endif
   #endif
 }
@@ -119,7 +122,9 @@ void effacer_ecran() {
     #ifdef _WIN32
       system("cls");
     #else
-      cout<<"\033[2J"<<flush; //equiv printf+flush ?
+      if (use_console_xy) {
+        cout<<"\033[2J"<<flush;
+      } else cout<<endl;
     #endif
   #endif
   _gotoxy(0,0);
@@ -131,7 +136,7 @@ void effacer_ecran() {
   int wherey() {return(0);}
 #else
   #ifdef _WIN32
-        // wherex/y() added 2015/02/04
+        // wherex/y() added 2015/02/04   .... wherex() nowhere called.
         int wherex()  {
           CONSOLE_SCREEN_BUFFER_INFO csbi;
           if (!GetConsoleScreenBufferInfo(
@@ -142,13 +147,15 @@ void effacer_ecran() {
           return csbi.dwCursorPosition.X;
         }
         int wherey()  {
-          CONSOLE_SCREEN_BUFFER_INFO csbi;
-          if (!GetConsoleScreenBufferInfo(
-                 GetStdHandle( STD_OUTPUT_HANDLE ),
-                 &csbi
-                 ))
-            return -1;
-          return csbi.dwCursorPosition.Y;
+          if (use_console_xy) {
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            if (!GetConsoleScreenBufferInfo(
+                GetStdHandle( STD_OUTPUT_HANDLE ),
+                &csbi
+            ))
+              return -1;
+            return csbi.dwCursorPosition.Y;
+          } else return(0);
         }
   #else
 /** from http://www.linuxquestions.org/questions/programming-9/get-cursor-position-in-c-947833/
@@ -339,9 +346,11 @@ int wherex() {
     return(col);
 }
 int wherey() {
+  if (use_console_xy) {
     int row=0,col=0;
     wherexy(row,col);
     return(row);
+  } else return(0);
 }
   #endif
 #endif
@@ -981,6 +990,17 @@ int CFichier_genepop::parseFile() {
 				while (buf.length()==0) { // si on est la c'est qu'on a pas tous les loci sur une ligne
 //                    inFile.get(toto, MAX_LINE_SIZE); buf = toto; inFile.ignore(1);
                     getline(inFile,buf);
+				  if (inFile.eof()) { // test necessary otherwis iLoc may not be incremented 
+				                      // and the do {...} while (iLoc<nbLoc); will continue indefinitely.
+#ifdef COMPATIBILITYRCPP
+				    // Rcpp::R
+#else
+				    cerr << "The file '" << fileName.c_str() << "' terminated while not all "<<nbLoc;
+				    cerr << " loci were found for an individual. Check the input file. " << endl;
+				    if (cinGetOnError) cin.get();
+#endif
+				    genepop_exit(-1, "Not all loci for all individuals. Check the input file.");
+				  }
                     while ((buf[0] == ' ') || (buf[0] == '\t') || (buf[0] == '\r')) {buf.erase(0, 1);} // vire les blancs
                     // or /final \r since _next_ tested for buf.length()==0 [outer while()]
                 } //[`a] ce point on doit avoir qq chose, soit un nouveau buf, soit la fin du buf prec
@@ -1013,13 +1033,13 @@ int CFichier_genepop::parseFile() {
 				} else if (lpos==2 || lpos==3) { //haploid data, do nothing
                 } else { // erreur
 //cerr<<lpos;
-                    #ifdef COMPATIBILITYRCPP
+#ifdef COMPATIBILITYRCPP
                         // Rcpp::R
-                    #else
+#else
                         cerr<<"(!) Incorrect input '"<<typ <<"' in input file" << endl;
                         cerr<<"    Check population "<<pops.size() << ", individual "<<lastPop()->inds.size()<< ", locus " << iLoc;
                         if (cinGetOnError) cin.get();
-                    #endif
+#endif
 
 					genepop_exit(-1, "(!) Incorrect input , Check population ");
 				}
@@ -1073,15 +1093,15 @@ int CFichier_genepop::parseFile() {
 		//check whether there is still something on the line
             while ((buf[0] == ' ') || (buf[0] == '\t') || (buf[0] == '\r')) {buf.erase(0, 1);} // vire les blancs
             if ( buf.length()>0 ) {
-                #ifdef COMPATIBILITYRCPP
+#ifdef COMPATIBILITYRCPP
                     // Rcpp::R
-                #else
+#else
                     cerr<<"(!) Invalid information for some individual: some information was found" << endl;
                     cerr<<"   after all genotypes have been read for an individual." << endl;
                     cerr<<"   Check individual "<<lastPop()->inds.size()<<" in population "<<pops.size();
                     cerr<<"   Suspect information: '"<<buf<<"'";
                     if (cinGetOnError) cin.get();
-                #endif
+#endif
 				genepop_exit(-1, "(!) Invalid information for some individual : some information was found, after all genotypes have been read for an individual.");
             }
 //cout<<endl;
@@ -1506,7 +1526,7 @@ int /*borne=std::max(gnourf,49),*/ligne,colonne;
     #ifdef COMPATIBILITYRCPP
         // Rcpp::R
     #else
-        cout<<"Largest allele index detected:\n";
+        cout<<loci.size()<<" loci detected. Largest allele index detected:\n";
     #endif
 	for (size_t ii=0;ii<loci.size();ii++) {
 		ligne=int(11+ii-((ii+1)/10)*10);

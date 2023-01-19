@@ -15,7 +15,7 @@ citEntry(entry="Article",
 
          pages        = "103-106",
          
-         #url          = "http://dx.doi.org/10.1111/j.1471-8286.2007.01931.x",
+         #url          = "https://doi.org/10.1111/j.1471-8286.2007.01931.x",
          
          
          textVersion = paste("Rousset F. (2008)",
@@ -24,5 +24,5 @@ citEntry(entry="Article",
                              
                              "Molecular Ecology Resources 8: 103-106", # place for "journal vol pages" 
                              
-                             "http://dx.doi.org/10.1111/j.1471-8286.2007.01931.x") # place for "URL ..." 
+                             "https://doi.org/10.1111/j.1471-8286.2007.01931.x") # place for "URL ..." 
 )

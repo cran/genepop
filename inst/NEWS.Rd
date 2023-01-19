@@ -3,10 +3,11 @@
 \encoding{UTF-8}
 % cf ?news for the format and usage of this file
 %
-\section{CHANGES UP TO VERSION 1.1.7}{
-\subsection{CORRECTED BUGS}{
+\section{CHANGES UP TO VERSION 1.2.0}{
+\subsection{NEW FEATURE}{
 \itemize{
-\item Incorrect tables of multi-locus and multi 'pop' tests of Hardy-Weinberg [test_HW() which default which="Proba"] when some individual tests had p-value estimates equal to 0, similar to the problem fixed in version 1.1.4 for differentiation tests. Per-locus per-pair-of-'pop' tests were correctly reported. More display glitches fixed in this and other options.
+\item Two additional bootstrap variants have been implemented for analyses of isolation by distance, their selection and usage being controlled by new arguments of ibd(), 'bootstrapMethod' and 'bootstrapNsim'. One of the method (BC) is of particular interest for data sets of thousands of loci.
+\item New 'Batch2file' mode of running Genepop, suitable for use in execution environments where the console output is redirected to a file.
 }
 }
 }
@@ -20,7 +21,7 @@
 \section{CHANGES UP TO VERSION 1.1.3}{
 \subsection{NEW FEATURES}{
 \itemize{
-\item New convenience function genepopExample() replacing potentially confusing code in the Examples
+\item New convenience function genepopExample() replacing potentially confusing code in the Examples.
 }
 }
 }

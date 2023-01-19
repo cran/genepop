@@ -35,22 +35,46 @@ The position of individuals must be specified as two coordinates standing for th
 
 Options to be described within option 6.5 are: $\hat{a}$ or $\hat{e}$ pairwise statistics (for diploid data); log transformation for geographic distances; minimal geographic distance; coverage probability of confidence interval; testing a given value of the slope; Mantel test settings; conversion to genetic distance matrix in Phylip format. Allele-size based analogues of $\hat{a}$ or $\hat{e}$ can be defined, but they should perform very poorly [@LebloisER03; @Rousset07w], so such an analysis has been purposely disabled.
 
-**Pairwise statistics for diploid data**: They are selected by the setting `IsolationStatistic=a`\index{IsolationStatistic setting}\index{Dsigma2@$D\sigma^2$
-estimation!a@$\hat{a}$ statistic} or `=e`, or at runtime (in batch mode, the default is $\hat{a}$). The $\hat{e}$ statistic is asymptotically biased in contrast to $\hat{a}$, but has lower variance. The bias of the $\hat{e}$-based slope is higher the more limited dispersal is, so it performs less well in the lower range of observed dispersal among various species. Confidence intervals are also biased [@LebloisER03; @WattsX07], being too short in the direction of low $D\sigma^2$ values, and on the contrary conservative in the direction of low $D\sigma^2$ values. Based on the simulation results of @WattsX07, a provisional advice is to run analyses with both statistics, and to derive an upper bound for the $D\sigma^2$ confidence interval (CI), hence the lower bound for the regression slope, from $\hat{e}$ (which has CI shorter than $\hat{a}$, though still conservative) and the other $D\sigma^2$ bound, hence the upper bound for the regression slope, from $\hat{a}$ (which has too short CI, but less biased than the $\hat{e}$ CI). When the $\hat{e}$-based $D\sigma^2$ estimate is below 2500 (linear habitat) or 4 (two-dimensional habitat) it is suggested to derive both bounds from $\hat{a}$.
+**Pairwise statistics for diploid data**: 
+Watts et al. (2007) contrasted two pairwise genetic distance statistics, $\hat{a}$ and $\hat{e}$. Using $\hat{e}$ is practically equivalent to using Loiselle's statistic\index{Dsigma2@$D\sigma^2$ estimation!Loiselle's statistic}
+[@LoiselleSNG95], which has previously been
+advocated by e.g. Vekemans \&\ Hardy (2004). Genepop actually uses a 
+statistic $e_r$ that handles missing data differently from $\hat{e}$ 
+(see Methods) but the following discussion holds for both. 
 
- Note that $\hat{e}$ is essentially Loiselle’s statistic\index{Dsigma2@$D\sigma^2$ estimation!Loiselle's statistic} [@LoiselleSNG95], which use in this context has previously been advocated by e.g. @VekemansH04.
+The pairwise statistic is selected by the setting `IsolationStatistic=a`\index{IsolationStatistic setting}\index{Dsigma2@$D\sigma^2$
+estimation!a@$\hat{a}$ statistic} or `=e`, or at runtime (in batch mode, the default is $\hat{a}$). 
+$\hat{e}$ is asymptotically biased in contrast to $\hat{a}$, but has lower
+variance. The bias of the $\hat{e}$-based slope is higher the more
+limited dispersal is, so it performs less well in the lower range of
+observed dispersal among various species. Confidence intervals are also
+biased (Leblois, Estoup, and Rousset 2003; Watts et al. 2007), being too
+short in the direction of low $D\sigma^2$ values, and on the contrary
+conservative in the direction of low $D\sigma^2$ values. Based on the
+simulation results of Watts et al. (2007), a provisional advice is to
+run analyses with both statistics, and to derive an upper bound for the
+$D\sigma^2$ confidence interval (CI), hence the lower bound for the
+regression slope, from $\hat{e}$ (which has CI shorter than
+$\hat{a}$, though still conservative) and the other $D\sigma^2$
+bound, hence the upper bound for the regression slope, from $\hat{a}$
+(which has too short CI, but less biased than the $\hat{e}$ CI). When
+the $\hat{e}$-based $D\sigma^2$ estimate is below 2500 (linear
+habitat) or 4 (two-dimensional habitat) it is suggested to derive both
+bounds from $\hat{a}$.
 
 For **haploid data** (i.e. `EstimationPloidy=Haploid`) the denominators of the $\hat{a}$ and $\hat{e}$ statistics cannot be computed. Ideally the denominator should be the gene diversity among individuals that would compete for the same position, as could be estimated from “group” data. As a reasonable first substitute, Genepop uses a single estimate of gene diversity (from the total sample and for each locus) to compute the denominators for all pairs of individuals. This amount to assume that overall differentiation in the population is weak.
 
 **Log transformation for geographic distances**: This transformation is required for estimation of $D\sigma^2$ when dispersal occurs over a surface rather than over a linear habitat. It is the default option in batch mode. It can be turned on and off by the setting `GeographicScale=Log`\index{GeographicScale setting} or `=Linear` or equivalently by `Geometry=2D` or `=1D`.\index{Geometry setting}
 
+**Nonparametric bootstrap** is used in particular to obtain confidence intervals [@DiCiccioE96]. The default method is the `ABC` bootstrap, but this can be changed by the setting `bootstrapMethod` to `BC` or `BCa` method. The number of computations of regression estimates scales as the number of loci for the ABC method, and as a chosen number of bootstrap resamples for the BC method (which is controlled by the `BootstrapNsim` setting, with default 999). The latter may thus be useful when the data include thousands of loci. The BCa method differs from the BC one by an additional step that scales as the number of loci.\index{Bootstrap methods}      
+
 **Coverage probability of confidence interval** This is the target probability that the confidence interval contains the parameter value. The usage is to compute intervals with 95% coverage and equal 2.5% tails, and this is the default coverage in Genepop. This can be changed by the setting `CIcoverage`, e.g. `CIcoverage=0.99` will compute interval with target probabilities 0.5% that either the confidence interval is too low or too high (an unrealistically large number of loci may be necessary to achieve the latter precision).\index{CIcoverage setting}\index{Confidence intervals}
 
-**Minimal and maximal geographic distances:** As discussed in @Rousset97, samples at small geographic distances are not expected to follow the simple theory of the regression method, so the program asks for a minimum geographical distance. Only pairwise comparisons of samples at larger distances are used to estimate the regression coefficient (all pairs are used for the Mantel test). The minimal distance may be specified by the setting `MinimalDistance=`*value*\index{MinimalDistance setting} or at runtime. This being said, it is wise to include all pairs in the estimation as no substantial bias is expected, and this avoids uncontrolled hacking of the data. Thus, the suggested minimal distance here is any distance large enough to exclude only pairs at zero geographical distance. Only non-negative values are accepted, and the default in batch mode is 0.0001.
+**Minimal and maximal geographic distances:** As discussed in @Rousset97, samples at small geographic distances are not expected to follow the simple theory of the regression method, so the program asks for a minimum geographical distance. Only pairwise comparisons of samples at strictly larger distances are used to estimate the regression coefficient (all pairs are used for the Mantel test). The minimal distance may be specified by the setting `MinimalDistance=`*value*\index{MinimalDistance setting} or at runtime. This being said, it is wise to include all pairs in the estimation as no substantial bias is expected, and this avoids uncontrolled hacking of the data. Thus, the suggested minimal distance here is any distance large enough to exclude only pairs at zero geographical distance. Negative values are thus not recommended (and rejected in 2D), and the default in batch mode is 0.0001.
 
 There is also a setting `MaximalDistance=`*value*.\index{MaximalDistance setting} This should not be abused, and is (therefore) available only through the settings file, not as a runtime option.
 
-**Testing a given value of the slope** The setting `testPoint=0.00123` (say) returns the unidirectional P-value for a specific value of the slope, using the ABC bootstrap method. This is the reciprocal of a confidence interval computation: confidence intervals evaluate parameter values corresponding to given error levels, say the 0.025 and 0.975 unidirectional levels for a 95% bidirectional CI, while this option evaluates the unidirectional P-value associated with a given parameter value.
+**Testing a given value of the slope** The setting `testPoint=0.00123` (say) returns the unidirectional P-value for a specific value of the slope, using the non-parametric bootstrap. This is the reciprocal of a confidence interval computation: confidence intervals evaluate parameter values corresponding to given error levels, say the 0.025 and 0.975 unidirectional levels for a 95% bidirectional CI, while this option evaluates the unidirectional P-value associated with a given parameter value.
 
 **Mantel test:**\index{Mantel test} The Mantel test is implemented. See Section \@ref(mantel-test) for limitations of this test. In the present context this is an exact test of the null hypothesis that there in no spatial correlation between genetic samples.
 

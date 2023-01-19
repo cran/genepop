@@ -44,18 +44,24 @@ knowledge of the CeCILL license and that you accept its terms.
 
 
 class CABCbootstrap {
-        size_t ABCloc;
-  size_t nb_units;
+        size_t nb_units;
         std::string testLegend;
-	    std::vector<double> delta;
-	    double bidullevel,z,ahat;
+        std::vector<double> delta;
+        double lambda_4_13,z,ahat;
         double cancelland(double Pvalue);
         double (*estimFnPtr)(std::vector<double> d);
         double testPoint;
         friend double cancellandWrapper(double unidirPvalue);
         double seuil_inf,seuil_sup;
+        int bootstrapOverLociABC(double (*estimatingFnPtr)(std::vector<double> d),std::string legend,std::string boot0utfile,bool clear_screen=true);
+        int bootstrapOverLociBCa(double (*estimatingFnPtr)(std::vector<double> d),
+                                 std::string legend,
+                                 std::string boot0utfile,
+                                 bool estim_accel, 
+                                 bool clear_screen=true);
 public:
-        int bootstrapOverLoci(double (*estimatingFnPtr)(std::vector<double> d),std::string legend,std::string boot0utfile,bool clear_screen=true);
+        int bootstrapOverLoci(int method, 
+                              double (*estimatingFnPtr)(std::vector<double> d),std::string legend,std::string boot0utfile,bool clear_screen=true);
         double Pvalue(double testPt,bool unidir,bool verbose);
         double t0,tinf,tsup,testPointPvalue;
         CABCbootstrap(size_t units);
@@ -64,4 +70,10 @@ public:
 
 std::vector<double> bisection_search(double (*func)(double d),double x1,double x2,bool verbose=true);
 
+std::vector<double> get_nearby_epsn(double sign, 
+                                    size_t nloc, 
+                                    size_t starting_at_task, 
+                                    size_t total_tasks, 
+                                    size_t consy, 
+                                    double (*estimatingFnPtr)(std::vector<double> d));
 #endif
